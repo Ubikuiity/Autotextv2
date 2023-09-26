@@ -2,21 +2,58 @@
 #include <string.h>
 #include <ctime>
 #include <iostream>
+#include <fstream>
 
 using namespace std;
 
-void getTime(string*);
+// Basic custom class used for logging
+class Logger
+{
+    private:
+         ofstream fileStream;
+
+    public:
+    Logger(string filePath)
+    {
+        fileStream.open(filePath, ofstream::trunc);  // Recreated file from scratch
+    }
+
+    ~Logger()
+    {
+        fileStream.close();
+    }
+
+    void log(string content)
+    {
+        time_t currentTime;
+        currentTime = time(NULL);
+        tm* now = localtime(&currentTime);
+        // Adds time to log
+        fileStream << to_string(now->tm_hour) << "°" << to_string(now->tm_min) << "\'" << to_string(now->tm_sec) << "\'\'" << " --- ";
+        fileStream << content << endl;
+    }
+};
+
+void GetLogfileName(string*);
 
 int main(/* int argc, char* argv[] */)
 {
     // FreeConsole(); Let go of the console
     string filename;  // name of file where we are going to log
-    getTime(&filename);
+    GetLogfileName(&filename);
     cout << "Logging to file : " << filename << endl;
+    Logger mainLogger("log\\" + filename);
+    mainLogger.log("Started Logging");
+
+    char i = 'a';
+    mainLogger.log(to_string(i));
     return 0;
 }
 
-void getTime(string* ptrFilename)
+/**
+* Get current time and returns a formated string. ex : "9_25_22h23m47s.log"
+*/
+void GetLogfileName(string* ptrFilename)
 {
     time_t currentTime;
     currentTime = time(NULL);
