@@ -1,3 +1,6 @@
 # Ignore compiled exe from C
 output/
 \.vscode
+Keyboardhook/
+myPlayground/
+*.exe
