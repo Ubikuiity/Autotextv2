@@ -1,13 +1,17 @@
 #include "sources/headers/dynStrArray.h"
+#include "sources/headers/createMotor.h"
+#include "sources/headers/useMotor.h"
 
 #include <stdio.h>
 
 void printValue(int index, char* word);
 void testDynStrArrays();
+void testMotorCreation();
 
 int main ()
 {
-    testDynStrArrays();
+    // testDynStrArrays();
+    testMotorCreation();
 
     return 0;
 }
@@ -55,4 +59,22 @@ void testDynStrArrays()
 void printValue(int index, char* word)
 {
     printf("index : %i --- %s\n", index, word);
+}
+
+void testMotorCreation()
+{
+    char* myWords[] = {"Hi", "Hello", "Cat", "Slay", "Slice", "Snake"};
+    reMotor* myMotor = createMotor(myWords, sizeof(myWords) / sizeof(myWords[0]));
+
+    int numberOfStates = lengthStateList(myMotor->StateList);
+    printf("\nMachine has %d states\n\n", numberOfStates);
+
+    for (int i=0; i<numberOfStates; i++)
+    {
+        State* theState = getStateListeValue(myMotor->StateList, i);
+        displayState(theState);
+        printf("\n\n");
+    }
+
+    plotMotor(myMotor);
 }

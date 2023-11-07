@@ -16,7 +16,7 @@ reMotor* createMotor(char* words[], int sizeWords)
     stateCounter++;
     regexMotor->StateList = createStateListWithFirstElem(firstState);
 
-    createNextBranches(firstState, dynWords, regexMotor->StateList, 0);
+    createNextBranches(firstState, dynWords, regexMotor->StateList, 1);
 
     return regexMotor;
 }

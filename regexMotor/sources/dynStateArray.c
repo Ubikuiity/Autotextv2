@@ -65,3 +65,18 @@ void appendStateList(stateListeElem* listP, State* val)
 
     listP->next = newElem;  // set the link
 }
+
+int lengthStateList(stateListeElem* listP)
+{
+    if (listP == NULL)  // if list is empty
+    {
+        return 0;
+    }
+    int cmp = 1;
+    while(listP->next != NULL)
+    {
+        listP = listP->next;
+        cmp++;
+    }
+    return cmp;
+}

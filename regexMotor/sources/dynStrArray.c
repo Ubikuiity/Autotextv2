@@ -34,7 +34,7 @@ char* getStrListeValue(strListeElem* listP, int index)
 {
     if (listP == NULL)
     {
-        printf("String list is empty, returning NULL");
+        // printf("String list is empty, returning NULL\n");
         return NULL;
     }
     for (int i=0; i<index; i++)

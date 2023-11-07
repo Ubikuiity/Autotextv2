@@ -29,3 +29,4 @@ State* getStateListeValue(stateListeElem* listP, int index);
 void appendStateList(stateListeElem* listP, State* val);
 
 void destroyStateList(stateListeElem* myStateList);
+int lengthStateList(stateListeElem* listP);
