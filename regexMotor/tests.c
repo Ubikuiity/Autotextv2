@@ -1,17 +1,22 @@
 #include "sources/headers/dynStrArray.h"
 #include "sources/headers/createMotor.h"
 #include "sources/headers/useMotor.h"
+#include "sources/headers/coloredPrints.h"
 
 #include <stdio.h>
 
 void printValue(int index, char* word);
 void testDynStrArrays();
-void testMotorCreation();
+reMotor* testMotorCreation();
+void testMotorUse(reMotor* motor, char* strToTest);
+void testColoredPrints();
 
 int main ()
 {
     // testDynStrArrays();
-    testMotorCreation();
+    reMotor* myMotor = testMotorCreation();
+    testMotorUse(myMotor, "slicat");
+    // testColoredPrints();
 
     return 0;
 }
@@ -61,9 +66,9 @@ void printValue(int index, char* word)
     printf("index : %i --- %s\n", index, word);
 }
 
-void testMotorCreation()
+reMotor* testMotorCreation()
 {
-    char* myWords[] = {"Hi", "Hello", "Cat", "Slay", "Slice", "Snake"};
+    char* myWords[] = {"hi", "hello", "cat", "slay", "slice", "slicat", "snake"};
     reMotor* myMotor = createMotor(myWords, sizeof(myWords) / sizeof(myWords[0]));
 
     int numberOfStates = lengthStateList(myMotor->StateList);
@@ -77,4 +82,30 @@ void testMotorCreation()
     }
 
     plotMotor(myMotor);
+
+    return myMotor;
+}
+
+void testMotorUse(reMotor* motor, char* strToTest)
+{
+    int lenOfString = customStrLen(strToTest);
+    for (int i=0; i<lenOfString; i++)
+    {
+        printf("\n ----- Iteration %d ----- Character : %c\n\n", i + 1, strToTest[i]);
+        nextStep(motor, strToTest[i]);
+        plotMotor(motor);
+    }
+    return;
+}
+
+void testColoredPrints()
+{
+    printf("\n\n --- Testing the color changes of prints ---\n\n");
+    for(int i=0; i<8; i++)
+    {
+        changePrintColor(i);
+        printf("%d", i);
+    }
+    changePrintColor(-1);
+    printf("\nBack to default color.\n\n");
 }

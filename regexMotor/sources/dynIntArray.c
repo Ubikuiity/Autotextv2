@@ -53,6 +53,39 @@ void itterateOverIntList(intListeElem* listP, void (*callback)(int index, int va
     callback(cmp, listP->value);
 }
 
+// Returns 1 if value is int list, 0 otherwise
+int isInList(intListeElem* listP, int value)
+{
+    while(listP->next != NULL)
+    {
+        if(listP->value == value)
+        {
+            return 1;
+        }
+        listP = listP->next;
+    }
+    if(listP->value == value)  // Check last valueof list
+    {
+        return 1;
+    }
+    return 0;
+}
+
+int lengthIntList(intListeElem* listP)
+{
+    if (listP == NULL)  // if list is empty
+    {
+        return 0;
+    }
+    int cmp = 1;
+    while(listP->next != NULL)
+    {
+        listP = listP->next;
+        cmp++;
+    }
+    return cmp;
+}
+
 void destroyIntList(intListeElem* myIntList)
 {
     intListeElem* nextElem = myIntList;

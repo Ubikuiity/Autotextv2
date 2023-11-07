@@ -18,6 +18,8 @@ reMotor* createMotor(char* words[], int sizeWords)
 
     createNextBranches(firstState, dynWords, regexMotor->StateList, 1);
 
+    regexMotor->Actives = createIntListWithFirstElem(0);  // Set initial state to active
+
     return regexMotor;
 }
 
@@ -63,7 +65,10 @@ void createNextBranches(State* callingState, strListeElem* callingWords, stateLi
                 popIndexStrList(&callingWords, i);
                 appendStrList(nextWords, word + 1);
             }
-            i++;
+            else
+            {
+                i++;  // We only iterate if we didn't pop the list, otherwise the popping is in itself of itteration since we remove an element
+            }
             word = getStrListeValue(callingWords, i);
         }
         if (reccursive == 1)
