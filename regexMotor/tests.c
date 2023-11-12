@@ -4,8 +4,9 @@
 #include "sources/headers/coloredPrints.h"
 
 #include <stdio.h>
+#include <stdlib.h>
 
-void printValue(int index, char* word);
+void printStrValue(int index, char* word);
 void testDynStrArrays();
 reMotor* testMotorCreation();
 void testMotorUse(reMotor* motor, char* strToTest);
@@ -15,7 +16,7 @@ int main ()
 {
     // testDynStrArrays();
     reMotor* myMotor = testMotorCreation();
-    testMotorUse(myMotor, "slicat");
+    // testMotorUse(myMotor, "slicat");
     // testColoredPrints();
 
     return 0;
@@ -34,16 +35,16 @@ void testDynStrArrays()
     appendStrList(myList, str3);
     appendStrList(myList, "WrittenInFunction");
 
-    itterateOverStrList(myList, printValue);
+    itterateOverStrList(myList, printStrValue);
 
     int indexRemove = 2;
     printf("\nRemoving element nb : %i --- %s\n\n", indexRemove, popIndexStrList(&myList, indexRemove));
 
-    itterateOverStrList(myList, printValue);
+    itterateOverStrList(myList, printStrValue);
 
     printf("\nRemoving last element : %s\n\n", popStrList(myList));
 
-    itterateOverStrList(myList, printValue);
+    itterateOverStrList(myList, printStrValue);
 
     printf("--- Testing construction of dynamic array from static array ---\n\n");
 
@@ -52,34 +53,44 @@ void testDynStrArrays()
 
     strListeElem* my2List = createStrListFromWords(myWords, sizeOfMyWords);
 
-    itterateOverStrList(my2List, printValue);
+    itterateOverStrList(my2List, printStrValue);
 
     printf("\nRemoving last element : %s\n", popStrList(my2List));
     printf("Removing first element : %s\n", popIndexStrList(&my2List, 0));
     printf("Removing third element : %s\n\n", popIndexStrList(&my2List, 2));
 
-    itterateOverStrList(my2List, printValue);
+    itterateOverStrList(my2List, printStrValue);
 }
 
-void printValue(int index, char* word)
+void printStrValue(int index, char* word)
 {
     printf("index : %i --- %s\n", index, word);
 }
 
+void printIntValue(int index, int val)
+{
+    printf("%i", val);
+}
+
 reMotor* testMotorCreation()
 {
-    char* myWords[] = {"hi", "hello", "cat", "slay", "slice", "slicat", "snake"};
+    char* myWords[] = {"hello", "hi", "cat", "slay", "slice", "slicat", "snake"};
     reMotor* myMotor = createMotor(myWords, sizeof(myWords) / sizeof(myWords[0]));
 
     int numberOfStates = lengthStateList(myMotor->StateList);
     printf("\nMachine has %d states\n\n", numberOfStates);
+    printf("Final states are states : ");
+    itterateOverIntList(myMotor->FinalStates, printIntValue);
+    printf("\nFinal strings are : \n");
+    itterateOverStrList(myMotor->FinalStrings, printStrValue);
+    printf("\n");
 
-    for (int i=0; i<numberOfStates; i++)
-    {
-        State* theState = getStateListeValue(myMotor->StateList, i);
-        displayState(theState);
-        printf("\n\n");
-    }
+    // for (int i=0; i<numberOfStates; i++)
+    // {
+    //     State* theState = getStateListeValue(myMotor->StateList, i);
+    //     displayState(theState);
+    //     printf("\n\n");
+    // }
 
     plotMotor(myMotor);
 
@@ -88,7 +99,7 @@ reMotor* testMotorCreation()
 
 void testMotorUse(reMotor* motor, char* strToTest)
 {
-    int lenOfString = customStrLen(strToTest);
+    int lenOfString = strlen(strToTest);
     for (int i=0; i<lenOfString; i++)
     {
         printf("\n ----- Iteration %d ----- Character : %c\n\n", i + 1, strToTest[i]);

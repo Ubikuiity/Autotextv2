@@ -2,8 +2,7 @@
 
 #include <stdio.h>
 
-void displayStateAndNext(State* state, intListeElem* activeStates, int offSet);
-int customStrLen(char str[]);
+void displayStateAndNext(State* state, reMotor* motor, int offSet);
 
 void displayState(State* state)
 {
@@ -19,24 +18,33 @@ void displayState(State* state)
 void plotMotor(reMotor* motor)
 {
     State* firstState = getStateListeValue(motor->StateList, 0);
-    displayStateAndNext(firstState, motor->Actives, 0);
+    displayStateAndNext(firstState, motor, 0);
     printf("\n");  // Skip a line before returning
 }
 
-void displayStateAndNext(State* state, intListeElem* activeStates, int offSet)
+void displayStateAndNext(State* state, reMotor* motor, int offSet)
 {
     char buffer[10];  // max Id of state must be <1 000
-    if (isInList(activeStates, state->Id))
+    if (isInList(motor->FinalStates, state->Id))
     {
-        changePrintColor(2);
+        changePrintColor(1);  // If state is final we print in Red
+    }
+    if (isInList(motor->Actives, state->Id))
+    {
+        changePrintColor(2);  // If state is active, we print in Green
     }
     sprintf(buffer, "---%d:%c ", state->Id, state->condition);  // state->Id string size is variable (1->1, 10->2, 100->3)
     printf(buffer);
-    if (isInList(activeStates, state->Id))
+    
+    if (isInList(motor->FinalStates, state->Id))  // If state is final, we print the final string leading to this state
     {
-        changePrintColor(-1);  // Set color back to default
+        char* stringFinal = getStrListeValue(motor->FinalStrings, getIndexOfValue(motor->FinalStates, state->Id));
+        printf("-> %s", stringFinal);
     }
-    int stateDisplaySize = customStrLen(buffer);
+
+    changePrintColor(-1);  // Set color back to default
+
+    int stateDisplaySize = strlen(buffer);
 
     stateListeElem* thisOuts= state->outs;
 
@@ -46,7 +54,7 @@ void displayStateAndNext(State* state, intListeElem* activeStates, int offSet)
         {
             printf("\n%*s┕", offSet + stateDisplaySize - 1, "");  // Add correct spacing at the beginning of next line
         }
-        displayStateAndNext(getStateListeValue(thisOuts, i), activeStates, offSet + stateDisplaySize);  // Care, the hardcoded 6 doesn't work if Id of state > 10
+        displayStateAndNext(getStateListeValue(thisOuts, i), motor, offSet + stateDisplaySize);  // Care, the hardcoded 6 doesn't work if Id of state > 10
     }
 }
 
@@ -68,20 +76,18 @@ void nextStep(reMotor* motor, char inputChar)
             }
         }
     }
-    // We need to check if some states in next actives are final states
+    // Check if we hit a final state
+    for (int i=0; i<lengthIntList(nextActives); i++)
+    {
+        State* activeState = getStateListeValue(motor->StateList, *getIntListeValue(nextActives, i));
+        if (activeState->outs == NULL)  // State is final if there is no outs
+        {
+            
+        }
+    }
+    
+    // Prepare for next run if we didn't hit a final state
     destroyIntList(motor->Actives);  // We remove old active list
     motor->Actives = nextActives;
     return;
-}
-
-// Utility functions
-
-int customStrLen(char str[])
-{
-    int cmp = 0;
-    while(str[cmp] != '\0')
-    {
-        cmp++;
-    }
-    return cmp;
 }

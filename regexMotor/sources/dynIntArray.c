@@ -41,6 +41,38 @@ int* getIntListeValue(intListeElem* listP, int index)
     return &(listP->value);  // Return pointer in case we need to modify value
 }
 
+int popIndexIntList(intListeElem** pointerToListP, int index)
+{
+    intListeElem* listP = *pointerToListP;
+    intListeElem* previousElem = NULL;
+    for (int i=0; i<index; i++)
+    {
+        if (listP->next == NULL)
+        {
+            printf("Coudn't pop value, returning -1 : index out of range\n");
+            return -1;
+        }
+        else
+        {
+            previousElem = listP;
+            listP = listP->next;
+        }
+    }
+    // ListP should be at desired index, we will remove that element from the list
+
+    int returnValue = listP->value;
+    if (previousElem == NULL)  // If we never went in the loop = we are removing first element
+    {
+        *pointerToListP = listP->next;  // We change the pointer so it points to the next element
+    }
+    else
+    {
+        previousElem->next = listP->next;  // We change previous element so it points to the next + 1
+    }
+    free(listP);
+    return returnValue;
+}
+
 void itterateOverIntList(intListeElem* listP, void (*callback)(int index, int value))
 {
     int cmp = 0;
@@ -64,11 +96,30 @@ int isInList(intListeElem* listP, int value)
         }
         listP = listP->next;
     }
-    if(listP->value == value)  // Check last valueof list
+    if(listP->value == value)  // Check last value of list
     {
         return 1;
     }
     return 0;
+}
+
+int getIndexOfValue(intListeElem* listP, int value)
+{
+    int cmp = 0;
+    while(listP->next != NULL)
+    {
+        if(listP->value == value)
+        {
+            return cmp;
+        }
+        listP = listP->next;
+        cmp++;
+    }
+    if(listP->value == value)  // Check last value of list
+    {
+        return cmp;
+    }
+    return -1;
 }
 
 int lengthIntList(intListeElem* listP)

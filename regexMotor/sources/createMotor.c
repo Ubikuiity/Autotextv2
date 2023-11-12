@@ -2,7 +2,16 @@
 
 int stateCounter = 0;
 
-void createNextBranches(State* callingState, strListeElem* callingWords, stateListeElem* motorStates, int reccursive);
+typedef struct stringWithIndex stringWithIndex;
+struct stringWithIndex
+{
+    char previousChars[MAXINPUTSTRINGSIZE + 1];
+    int indexPreviousChars;  // Index of the '\0' in the list
+};
+
+void createNextBranches(State* callingState, strListeElem* callingWords, reMotor* motor, stringWithIndex* previousChars, int reccursive);
+void appendToString(stringWithIndex* strStruct, char c);
+void deepCopyStringWithIndex(stringWithIndex* Destination, stringWithIndex* Source);
 
 // The regex motor we use has the form of a state machine
 // Returns initial state and creates all the states and branches
@@ -16,8 +25,18 @@ reMotor* createMotor(char* words[], int sizeWords)
     stateCounter++;
     regexMotor->StateList = createStateListWithFirstElem(firstState);
 
-    createNextBranches(firstState, dynWords, regexMotor->StateList, 1);
+    // Here we initialize the values of FinalStrings and FinalStringIndexes of motor with false values that we will remove later
+    // We need to have one value to initialize the list, this is why we  create false values
+    regexMotor->FinalStrings = createStrListWithFirstElem("a");
+    regexMotor->FinalStates = createIntListWithFirstElem(0);
 
+    stringWithIndex* initialCharacters = malloc(sizeof(stringWithIndex));
+    initialCharacters->indexPreviousChars = 0;
+    initialCharacters->previousChars[0] = '\0';
+    createNextBranches(firstState, dynWords, regexMotor, initialCharacters, 1);
+
+    popIndexStrList(&(regexMotor->FinalStrings), 0);  // Remove the false values we created to initialize
+    popIndexIntList(&(regexMotor->FinalStates), 0);  // Remove the false values we created to initialize
     regexMotor->Actives = createIntListWithFirstElem(0);  // Set initial state to active
 
     return regexMotor;
@@ -25,7 +44,7 @@ reMotor* createMotor(char* words[], int sizeWords)
 
 // reccursive must be 1 if we want the function to be reccursive.
 // This function is a reccursive function that creates the branches exiting the calling state.
-void createNextBranches(State* callingState, strListeElem* callingWords, stateListeElem* motorStates, int reccursive)
+void createNextBranches(State* callingState, strListeElem* callingWords, reMotor* motor, stringWithIndex* previousChars, int reccursive)
 {
     int firstRound = 1;  // Used to initialize outs of callingState
 
@@ -36,7 +55,7 @@ void createNextBranches(State* callingState, strListeElem* callingWords, stateLi
         State* NewState = createState(stateCounter, NULL, firstWord[0]);  // Creating the state
         stateCounter++;
 
-        appendStateList(motorStates, NewState);
+        appendStateList(motor->StateList, NewState);
 
         // Appending new state to callingState outputs
         if (firstRound == 1)
@@ -50,9 +69,18 @@ void createNextBranches(State* callingState, strListeElem* callingWords, stateLi
         }
         if (firstWord[1] == '\0')  // If this is a single caracter, we create a final state
         {
+            appendIntList(motor->FinalStates, NewState->Id);
+
+            // Recover final word
+            char* finalWord = malloc(sizeof(char[MAXINPUTSTRINGSIZE + 1])); // We need to manually allocate here since variable is destroyed when function ends otherwise
+            strcpy(finalWord, previousChars->previousChars);
+            int lenWord = strlen(finalWord);
+            finalWord[lenWord] = firstWord[0];
+            finalWord[lenWord + 1] = '\0';
+            appendStrList(motor->FinalStrings, finalWord);
             continue;  // Go to next word, this state has no outputs since it is a final state
         }
-        // We now deal with the newly created state to create its ouputs
+        // Else we deal with the newly created state to create its ouputs
 
         strListeElem* nextWords = createStrListWithFirstElem(firstWord + 1);
 
@@ -73,7 +101,39 @@ void createNextBranches(State* callingState, strListeElem* callingWords, stateLi
         }
         if (reccursive == 1)
         {
-            createNextBranches(NewState, nextWords, motorStates, reccursive);
+            // Prepare the new previous characters
+            stringWithIndex* nextPreviousChars = malloc(sizeof(stringWithIndex));
+            deepCopyStringWithIndex(nextPreviousChars, previousChars);
+            appendToString(nextPreviousChars, firstWord[0]);
+            createNextBranches(NewState, nextWords, motor, nextPreviousChars, reccursive);
         }
     }
+    free(previousChars);  // Free the calling previous chars
+}
+
+void appendToString(stringWithIndex* strStruct, char c)
+{
+    if (strStruct->indexPreviousChars >= MAXINPUTSTRINGSIZE - 1)  // Skip if we have an overflow
+    {
+        return;
+    }
+    else
+    {
+        strStruct->previousChars[strStruct->indexPreviousChars] = c;
+        strStruct->previousChars[strStruct->indexPreviousChars + 1] = '\0'; 
+    }
+    strStruct->indexPreviousChars++;
+}
+
+void deepCopyStringWithIndex(stringWithIndex* Destination, stringWithIndex* Source)
+{
+    // Handle the deep copy of the string
+    int cmp = -1;  // We increment at the begining of the loop, so we start at -1
+    while(Source->previousChars[cmp] != '\0')
+    {
+        cmp ++;
+        Destination->previousChars[cmp] = Source->previousChars[cmp];
+    }
+    Destination->indexPreviousChars = Source->indexPreviousChars;
+    return;
 }
