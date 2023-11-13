@@ -19,6 +19,8 @@ int main ()
     // testMotorUse(myMotor, "slicat");
     // testColoredPrints();
 
+    destroyMotor(myMotor);
+
     return 0;
 }
 
@@ -69,12 +71,12 @@ void printStrValue(int index, char* word)
 
 void printIntValue(int index, int val)
 {
-    printf("%i", val);
+    printf("%i ", val);
 }
 
 reMotor* testMotorCreation()
 {
-    char* myWords[] = {"hello", "hi", "cat", "slay", "slice", "slicat", "snake"};
+    char* myWords[] = {"hello", "cat", "slay", "slice", "slicat", "snake", "hi"};
     reMotor* myMotor = createMotor(myWords, sizeof(myWords) / sizeof(myWords[0]));
 
     int numberOfStates = lengthStateList(myMotor->StateList);

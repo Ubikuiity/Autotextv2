@@ -137,3 +137,21 @@ void deepCopyStringWithIndex(stringWithIndex* Destination, stringWithIndex* Sour
     Destination->indexPreviousChars = Source->indexPreviousChars;
     return;
 }
+
+// Used in destructor function to destroy final strings
+void freeString(int i, char* str)
+{
+    free(str);
+}
+
+void destroyMotor(reMotor* motor)
+{
+    destroyStateList(motor->StateList);
+    destroyIntList(motor->Actives);
+    destroyIntList(motor->FinalStates);
+
+    // We have to manually destroy each final strings that has been allocated when creating the motor
+    itterateOverStrList(motor->FinalStrings, freeString);
+    destroyStrList(motor->FinalStrings);
+    free(motor);
+}

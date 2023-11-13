@@ -18,3 +18,5 @@ struct reMotor
 };
 
 reMotor* createMotor(char* words[], int sizeWords);
+
+void destroyMotor(reMotor* motor);
