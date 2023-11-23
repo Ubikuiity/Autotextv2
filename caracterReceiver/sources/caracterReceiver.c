@@ -1,7 +1,5 @@
 #include "./headers/caracterReceiver.h"
 
-#define DEFAULT_PORT "7773"
-
 // Creates character receiver. port defaults to 7773 if 0 is given as input
 // verbose parameter is 0 for no verbose and 1 for debug verbose
 SOCKET* startReceiver(int verbose)
@@ -83,14 +81,13 @@ SOCKET* startReceiver(int verbose)
 }
 
 // This function is blocking until we get a caracter from a sender to our socket.
-// it then calls the callback with the given caracter
+// cPtr must link to an array of char of size at least 5
 // verbose parameter is 0 for no verbose and 1 for debug verbose
 void waitForCharacter(SOCKET* ListenSocketPtr, char* cPtr, int verbose)
 {
     // Call the recvfrom function to receive datagrams
     // on the bound socket.
-    char recBuffer[2];
-    int bufLen = 2;
+    int bufLen = MAX_RECEIVER_PAQUET_SIZE;
 
     SOCKET ListenSocket = *ListenSocketPtr;
 
@@ -98,17 +95,16 @@ void waitForCharacter(SOCKET* ListenSocketPtr, char* cPtr, int verbose)
     int SenderAddrSize = sizeof (SenderAddr);
 
     int iResult = recvfrom(ListenSocket,
-                       recBuffer, bufLen, 0,
+                       cPtr, bufLen, 0,
                        (SOCKADDR *) &SenderAddr, &SenderAddrSize);
     if (iResult == SOCKET_ERROR && verbose) {
         printf("recvfrom failed with error %d\n", WSAGetLastError());
     }
     else if(verbose)
     {
-        printf("Received packet : %s\n", recBuffer);
+        printf("Received packet : %s\n", cPtr);
     }
 
-    *cPtr = recBuffer[0];
     return;
 }
 
