@@ -9,10 +9,7 @@ SOCKET* startReceiver(int verbose)
     
     int iResult = WSAStartup(MAKEWORD(2,2), &wsaData);  // (Version 2,2 de Winsock)
     if (iResult != 0) {
-        if (verbose)
-        {
-            printf("WSAStartup failed: %d\n", iResult);
-        }
+        if (verbose) printf("WSAStartup failed: %d\n", iResult);
         return NULL;
     }
 
@@ -27,11 +24,9 @@ SOCKET* startReceiver(int verbose)
 
     // Resolve the local address and port to be used by the server
     iResult = getaddrinfo(NULL, DEFAULT_PORT, &hints, &result);
-    if (iResult != 0) {
-        if (verbose)
-        {
-            printf("getaddrinfo failed: %d\n", iResult);
-        }
+    if (iResult != 0)
+    {
+        if (verbose) printf("getaddrinfo failed: %d\n", iResult);
         WSACleanup();
         return NULL;
     }
@@ -64,10 +59,7 @@ SOCKET* startReceiver(int verbose)
     iResult = bind(*ListenSocketPtr, result->ai_addr, (int)result->ai_addrlen);
     
     if (iResult == SOCKET_ERROR) {
-        if (verbose)
-        {
-            printf("bind failed with error: %d\n", WSAGetLastError());
-        }
+        if (verbose) printf("bind failed with error: %d\n", WSAGetLastError());
         freeaddrinfo(result);
         closesocket(*ListenSocketPtr);
         WSACleanup();
@@ -100,19 +92,124 @@ void waitForCharacter(SOCKET* ListenSocketPtr, char* cPtr, int verbose)
     if (iResult == SOCKET_ERROR && verbose) {
         printf("recvfrom failed with error %d\n", WSAGetLastError());
     }
-    else if(verbose)
+    else if (verbose)
     {
         printf("Received packet : %s\n", cPtr);
     }
-
     return;
 }
 
-void stopReceiver(SOCKET* ListenSocketPtr)
+// encapsulated version ready to be sent to _beginthread
+void encapsulatedWaitForCharacter(void* vparams)
+{
+    threadProperties* params = (threadProperties*) vparams;  // Casting type
+    WaitForSingleObject(params->mutexHandle, INFINITE);  // TODO We should add finite time and check that we indeed got the mutex
+    while(TRUE)
+    {
+        waitForCharacter(params->Listener, params->ChrBuffer, 0);
+        if (!strcmp(params->ChrBuffer, STOP_RECEIVER_SIGNAL))  // If we receive STOP, we stop
+        {
+            break;
+        }
+        else
+        {
+            params->callback(params->ChrBuffer);  // Else we call callback function
+        }
+    }
+
+    ReleaseMutex(params->mutexHandle);
+}
+
+void clearReceiver(SOCKET* ListenSocketPtr)
 {
     closesocket(*ListenSocketPtr);
     free(ListenSocketPtr);
     WSACleanup();
 
     return;
+}
+
+// Creates the caracter receiver as a thread.
+// This thread will call the callback with a given caracter each time we press the keyboard key
+threadProperties* StartReceiverAsThread(void (*callback)(char*), int verbose)
+{
+    threadProperties* thrdProps = malloc(sizeof(threadProperties));
+    
+    if (verbose) printf("Creating Receiver...\n");
+
+    thrdProps->Listener = startReceiver(0);  // Create listener
+    if (thrdProps->Listener == NULL)
+    {
+        if (verbose) printf("Something went wrong during socket creation :(\n");
+        return NULL;
+    }
+    if (verbose) printf("Receiver OK\n\n");
+
+    thrdProps->mutexHandle = CreateMutex(NULL, FALSE, NULL);
+    thrdProps->callback = callback;
+    _beginthread(encapsulatedWaitForCharacter, 0, (void*)thrdProps);
+    return thrdProps;
+}
+
+// Used to stop the receiver by sending a STOP_RECEIVER_SIGNAL package
+// WSAStartup must have already been called before calling this function
+// (Which should be the case if receiver is up)
+int sendStopSignal()
+{
+    struct addrinfo hints;
+
+    ZeroMemory(&hints, sizeof (hints));  // Fills the memory with zeros
+    hints.ai_family = AF_INET;  // IPv4 address family
+    hints.ai_socktype = SOCK_DGRAM;  // Datagram socket -> Used in UDP
+    hints.ai_protocol = IPPROTO_UDP;  // Protocol UDP
+    hints.ai_flags = AI_PASSIVE;  // Socket address will be used in bind()
+
+    SOCKET SendingSocket = INVALID_SOCKET;
+
+    // Create a SOCKET for client to send data
+    SendingSocket = socket(hints.ai_family, hints.ai_socktype, hints.ai_protocol);
+    if (SendingSocket == INVALID_SOCKET)
+    {
+        printf("Error at socket(): %ld\n", WSAGetLastError());
+        WSACleanup();
+        return 1;
+    }
+
+    // Call the send function to send datagrams
+    char sendBuffer[5] = STOP_RECEIVER_SIGNAL;
+    int bufLen = 5;
+
+    struct sockaddr_in ReceiverAddr;
+    ReceiverAddr.sin_family = AF_INET;
+    ReceiverAddr.sin_port = htons(7773);  // warning Hardcoded to test here
+    ReceiverAddr.sin_addr.s_addr = inet_addr("127.0.0.1");
+
+    int iResult = sendto(SendingSocket,
+                       sendBuffer, bufLen, 0,
+                       (SOCKADDR *) &ReceiverAddr, sizeof(ReceiverAddr));
+    if (iResult == SOCKET_ERROR) {
+        printf("sendto failed with error %d\n", WSAGetLastError());
+    }
+
+    closesocket(SendingSocket);
+
+    return 0;
+}
+
+// This function closes the threads and clear memory.
+// it needs to be called with the mutex handle of returned by the thread when created
+void StopReceiver(threadProperties* propertiesOfThread)
+{
+    sendStopSignal();
+    // Wait for receiver to be closed, and then destroy the object
+    DWORD res = WaitForSingleObject(propertiesOfThread->mutexHandle, 1000);
+    while (res != WAIT_OBJECT_0)  // We send request to close the socket every second if it doesn't close properly
+    {
+        printf("Receiver not stopped yet ... Error : %#010x/", res);
+        res = WaitForSingleObject(propertiesOfThread->mutexHandle, 1000);
+    }
+    
+    clearReceiver(propertiesOfThread->Listener);
+    CloseHandle(propertiesOfThread->mutexHandle);
+    free(propertiesOfThread);
 }
