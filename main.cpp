@@ -12,5 +12,7 @@ int main(/* int argc, char* argv[] */)
     Logger mainLogger("output\\log\\" + filename);  // Hardcoded path here !
     mainLogger.log("Started Logging");
 
+    
+
     return 0;
 }

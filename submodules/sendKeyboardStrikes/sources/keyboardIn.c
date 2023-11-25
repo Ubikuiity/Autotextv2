@@ -41,27 +41,31 @@ BYTE releaseActionKeys()
     BYTE formerState = 0x0;
     INPUT inputs[5];  // 5 is the max inputs we will send to the keyboard
     ZeroMemory(inputs, sizeof(inputs));
-    if (GetKeyState(VK_SHIFT) & 0x8000)  // Check if SHIFT is holded
+    if (HANDLE_CTRLALTSHIFT_KEYS)
     {
-        formerState |= 0x1;
-        inputs[0].type = INPUT_KEYBOARD;
-        inputs[0].ki.wVk = VK_SHIFT;
-        inputs[0].ki.dwFlags = KEYEVENTF_KEYUP;
+        if (GetKeyState(VK_SHIFT) & 0x8000)  // Check if SHIFT is holded
+        {
+            formerState |= 0x1;
+            inputs[0].type = INPUT_KEYBOARD;
+            inputs[0].ki.wVk = VK_SHIFT;
+            inputs[0].ki.dwFlags = KEYEVENTF_KEYUP;
+        }
+        if (GetKeyState(VK_CONTROL) & 0x8000)  // Check if CTRL is holded
+        {
+            formerState |= 0x2;
+            inputs[1].type = INPUT_KEYBOARD;
+            inputs[1].ki.wVk = VK_CONTROL;
+            inputs[1].ki.dwFlags = KEYEVENTF_KEYUP;
+        }
+        if (GetKeyState(VK_MENU) & 0x8000)  // Check if ALT is holded
+        {
+            formerState |= 0x4;
+            inputs[2].type = INPUT_KEYBOARD;
+            inputs[2].ki.wVk = VK_MENU;
+            inputs[2].ki.dwFlags = KEYEVENTF_KEYUP;
+        }
     }
-    if (GetKeyState(VK_CONTROL) & 0x8000)  // Check if CTRL is holded
-    {
-        formerState |= 0x2;
-        inputs[1].type = INPUT_KEYBOARD;
-        inputs[1].ki.wVk = VK_CONTROL;
-        inputs[1].ki.dwFlags = KEYEVENTF_KEYUP;
-    }
-    if (GetKeyState(VK_MENU) & 0x8000)  // Check if ALT is holded
-    {
-        formerState |= 0x4;
-        inputs[2].type = INPUT_KEYBOARD;
-        inputs[2].ki.wVk = VK_MENU;
-        inputs[2].ki.dwFlags = KEYEVENTF_KEYUP;
-    }
+
     if (GetKeyState(VK_CAPITAL))  // Check if CAPS LOCK is toggled
     {
         formerState |= 0x8;
