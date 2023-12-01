@@ -4,3 +4,4 @@ output/
 Keyboardhook/
 myPlayground/
 *.exe
+**/build/

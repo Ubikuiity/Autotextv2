@@ -1,0 +1,3 @@
+add_library(sendKeyboardStrikes keyboardIn.c)
+
+target_include_directories(sendKeyboardStrikes PUBLIC headers)

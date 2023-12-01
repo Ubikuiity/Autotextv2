@@ -52,7 +52,7 @@ void displayStateAndNext(State* state, reMotor* motor, int offSet)
     {
         if (i >= 1)  // if i = 0, we keep going on the same line, else we skip a line and add correct spacing to create a "branch"
         {
-            printf("\n%*s┕", offSet + stateDisplaySize - 1, "");  // Add correct spacing at the beginning of next line
+            printf("\n%*s", offSet + stateDisplaySize, "");  // Add correct spacing at the beginning of next line
         }
         displayStateAndNext(getStateListeValue(thisOuts, i), motor, offSet + stateDisplaySize);  // Care, the hardcoded 6 doesn't work if Id of state > 10
     }

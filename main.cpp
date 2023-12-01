@@ -1,4 +1,7 @@
-#include "./sources/headers/logger.h"
+#include "./submodules/logger/sources/headers/logger.h"
+#include "./submodules/regexMotor/sources/headers/useMotor.h"
+
+#include "./DLLHeader/hook.h"
 #include <iostream>
 
 using namespace std;

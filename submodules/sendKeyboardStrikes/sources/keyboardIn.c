@@ -123,7 +123,7 @@ void writeGivenString(char stringToWrite[], int stringLenght)
 {
     HKL myLayout = GetKeyboardLayout(0);
     BYTE state = releaseActionKeys();
-    printf("State of former Keyboard was : %#x\n", state);
+    // printf("State of former Keyboard was : %#x\n", state);
     for (int i=0; i<stringLenght; i++)
     {
         writeCharacter(stringToWrite[i], myLayout);

@@ -7,7 +7,7 @@ int main()
 
     displayPressedKeys(myChar, myLayout);
 
-    char myString[] = "Hello, I am UBIKUITY @@@@@_EKKO\nSome call me Ubi...";
+    char myString[] = "Hello, This is my test string @@@@@_ECHO\nHELLO, THIS IS MY TEST STRING...";
     printf("In 5 seconds, we will type : %s\n", myString);
     Sleep(5000);
 
