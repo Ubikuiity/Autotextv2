@@ -16,13 +16,14 @@ struct threadProperties
 {
     SOCKET* Listener;
     HANDLE mutexHandle;
-    void (*callback)(char*);
+    void (*callback)(char*, void*);
+    void* paramsForCallback;
     char ChrBuffer[MAX_RECEIVER_PAQUET_SIZE];
 };
 
 // Public functions
 
-threadProperties* StartReceiverAsThread(void (*callback)(char*), int verbose);
+threadProperties* StartReceiverAsThread(void (*callback)(char*, void*), void* paramsForCallback, int verbose);
 void StopReceiver(threadProperties* propertiesOfThread);
 
 // Private functions

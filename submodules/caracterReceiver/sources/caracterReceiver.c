@@ -113,7 +113,7 @@ void encapsulatedWaitForCharacter(void* vparams)
         }
         else
         {
-            params->callback(params->ChrBuffer);  // Else we call callback function
+            params->callback(params->ChrBuffer, params->paramsForCallback);  // Else we call callback function
         }
     }
 
@@ -130,8 +130,8 @@ void clearReceiver(SOCKET* ListenSocketPtr)
 }
 
 // Creates the caracter receiver as a thread.
-// This thread will call the callback with a given caracter each time we press the keyboard key
-threadProperties* StartReceiverAsThread(void (*callback)(char*), int verbose)
+// This thread will call the callback with params for callback and a given caracter each time we press the keyboard key
+threadProperties* StartReceiverAsThread(void (*callback)(char*, void*), void* paramsForCallback, int verbose)
 {
     threadProperties* thrdProps = malloc(sizeof(threadProperties));
     
@@ -147,6 +147,7 @@ threadProperties* StartReceiverAsThread(void (*callback)(char*), int verbose)
 
     thrdProps->mutexHandle = CreateMutex(NULL, FALSE, NULL);
     thrdProps->callback = callback;
+    thrdProps->paramsForCallback = paramsForCallback;
     _beginthread(encapsulatedWaitForCharacter, 0, (void*)thrdProps);
     return thrdProps;
 }

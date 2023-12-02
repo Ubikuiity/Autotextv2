@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.18)
 
-# set the project name and version
+# set the project name
 project(CaracterReceiverTest)
 
 # specify the C standard
