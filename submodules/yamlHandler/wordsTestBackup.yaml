@@ -1,0 +1,19 @@
+
+-Pattern:
+	w0rD:Hello:w0rD
+	r3Pl4c3:Mama:r3Pl4c3
+
+-Pattern:
+	w0rD:Hi:w0rD
+	r3Pl4c3:Hello:r3Pl4c3
+
+-Pattern:
+	w0rD:myWord:w0rD
+	r3Pl4c3:ReplacerHere
+And we skip a line...
+And again...:r3Pl4c3
+
+-Pattern:
+	w0rD:Ubikuity:w0rD
+	r3Pl4c3:Hi, my name is Ubikuity
+I am just a lambda.:r3Pl4c3

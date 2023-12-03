@@ -1,7 +1,20 @@
-#include "./headers/yamlHandler.h"
+#include "./headers/yamlReader.h"
 
-// Now functions that get the file and treat the text in it to find words
-// ! We need to free the returned buffer after use !
+// Reads a file and returnes the wordPatterns found in it
+// Returns a structure that contains 2 string list :
+// - The first one for words
+// - The second one for replacers
+// ! We need to destroy the wordsPatterns returned by this function with destroyWordPatterns after use !
+wordPatterns* getWordPatternsFromFile(char* filePath)
+{
+    char* buf = fileToString(filePath);
+    wordPatterns* Patterns = findWordsAndReplacements(buf);
+    free(buf);
+    return Patterns;
+}
+
+// Reads a file and returns the content of it as a string
+// ! We need to free the returned string after use !
 char* fileToString(char* pathOfFile)
 {
     FILE* file = NULL;
@@ -28,6 +41,13 @@ char* fileToString(char* pathOfFile)
     return buffer;
 }
 
+// parse the string given to find the patterns and for each pattern, seek 2 fields :
+// - WORD_HEADER:XXX:WORD_HEADER for the word that will be seeked in user inputs
+// - REPLACE_HEADER:YYY:REPLACE_HEADER for the string that will replace the word typed
+// Returns a structure that contains 2 string list : 
+// - The first one for words
+// - The second one for replacers
+// ! We need to destroy the wordsPatterns returned by this function with destroyWordPatterns after use !
 wordPatterns* findWordsAndReplacements(char* buffer)
 {
     wordPatterns* Patterns = malloc(sizeof(wordPatterns));
@@ -35,19 +55,28 @@ wordPatterns* findWordsAndReplacements(char* buffer)
 
     int index = 0;
 
+    // First we need to advance to the first PATTERN_HEADER we find
+    while(customStrCmp(buffer + index, PATTERN_HEADER) != 0)
+    {
+        index++;
+    }
+    buffer = buffer + index + strlen(PATTERN_HEADER);
+
+    index = 0;
+
     while(1)
     {
         // printf("Value of string buffer :\n%s\n", buffer);
         while(customStrCmp(buffer + index, PATTERN_HEADER) != 0)  // Advance through the buffer till we find the pattern
         {
-            if((buffer + index)[10] == '\0')  // Means we reached end of the file
+            if((buffer + index)[0] == '\0')  // Means we reached end of the file
             {
                 // printf("Found end of file\n");
                 char* result = malloc(sizeof(char) * (index + 1));
                 strncpy(result, buffer, index);
                 result[index] = '\0';
                 
-                findWordsAndReplacers(Patterns, result, &firstRun);
+                findWordAndReplacer(Patterns, result, &firstRun);
 
                 free(result);  // We can free result because findWordsAndReplacers will alocate values and put them in Patterns
                 
@@ -62,7 +91,7 @@ wordPatterns* findWordsAndReplacements(char* buffer)
         strncpy(result, buffer, index);
         result[index] = '\0';
 
-        findWordsAndReplacers(Patterns, result, &firstRun);
+        findWordAndReplacer(Patterns, result, &firstRun);
 
         free(result);  // We can free result because findWordsAndReplacers will alocate values and put them in Patterns
 
@@ -75,10 +104,17 @@ wordPatterns* findWordsAndReplacements(char* buffer)
 }
 
 // finds the words and replacers in the given buffer
-void findWordsAndReplacers(wordPatterns* Patterns, char* buffer, int* firstRun)
+void findWordAndReplacer(wordPatterns* Patterns, char* buffer, int* firstRun)
 {
     char* word = findLine(&buffer, WORD_HEADER);
     char* replace = findLine(&buffer, REPLACE_HEADER);
+
+    if (word == NULL || replace == NULL)  // If we coudn't find the word or replacer, we skip this pattern
+    {
+        free(word);
+        free(replace);
+        return;
+    }
 
     if (*firstRun)
     {

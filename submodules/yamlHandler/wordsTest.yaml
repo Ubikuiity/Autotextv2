@@ -1,3 +1,5 @@
+# This is the format used to store the patterns that we will seek in user keyboard inputs
+# Be careful, the file must contains a line skip before getting to the first pattern, otherwise this pattern will be ignored
 -Pattern:
   w0rD:Hello:w0rD
   r3Pl4c3:Mama:r3Pl4c3
