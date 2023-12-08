@@ -33,3 +33,17 @@ void appendPattern(wordPatterns* patterns, char* word, char* replacer)
     appendStrList(patterns->words, strdup(word));  // strdup does the malloc
     appendStrList(patterns->replacements, strdup(replacer));
 }
+
+// Gets replacer for the given word. NULL if no words were found
+char* getReplacerFromWord(wordPatterns* patterns, char* word)
+{
+    int indexOfWord = getIndexOfStrValue(patterns->words, word);
+    if (indexOfWord != -1)
+    {
+        return getStrListeValue(patterns->replacements, indexOfWord);
+    }
+    else
+    {
+        return NULL;
+    }
+}

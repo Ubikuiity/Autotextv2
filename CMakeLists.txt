@@ -18,6 +18,8 @@ target_link_libraries(main PUBLIC caracterReceiver)
 target_link_libraries(main PUBLIC logger)
 target_link_libraries(main PUBLIC regexMotor)
 target_link_libraries(main PUBLIC sendKeyboardStrikes)
+target_link_libraries(main PUBLIC yamlHandler)
+target_link_libraries(main PUBLIC utils)
 
 # manually import the keyboard Hook DLL
 # (For some reason this must be done in project CMake and not in a subdirectory)

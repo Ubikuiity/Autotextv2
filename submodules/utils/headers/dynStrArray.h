@@ -25,3 +25,4 @@ int lengthStrList(strListeElem* listP);
 void itterateOverStrList(strListeElem* listP, void (*callback)(int, char*));
 void destroyStrList(strListeElem* myIntList);
 int getIndexOfStrValue(strListeElem* listP, char* value);
+strListeElem* memCopyStrList(strListeElem* listP);

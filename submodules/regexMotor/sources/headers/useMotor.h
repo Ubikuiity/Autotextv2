@@ -1,7 +1,7 @@
 #pragma once
 
 #include "createMotor.h"
-#include "coloredPrints.h"
+#include "../../../utils/headers/coloredPrints.h"
 
 /* REMINDER OF FUNCTIONS OF SUBMODULES
 
@@ -19,7 +19,8 @@ reMotor* createMotor(char* words[], int sizeWords);
 void destroyMotor(reMotor* motor);
 */
 
-
 void plotMotor(reMotor* motor);
 void displayState(State* state);
 void nextStep(reMotor* motor, char inputChar);
+int checkAndGetFinals(reMotor* motor);
+void restartMotorForNextRun(reMotor* motor);

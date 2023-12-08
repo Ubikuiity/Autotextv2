@@ -8,9 +8,9 @@ set(CMAKE_C_STANDARD 17)
 set(CMAKE_C_STANDARD_REQUIRED True)
 
 add_subdirectory(sources)
-add_subdirectory(utils)
+add_subdirectory("../utils" ${CMAKE_CURRENT_BINARY_DIR}/utils)
 
 add_executable(yamlHandlerTest tests.c)
 
-target_link_libraries(yamlHandlerTest utils)
 target_link_libraries(yamlHandlerTest yamlHandler)
+target_link_libraries(yamlHandlerTest utils)

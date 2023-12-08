@@ -41,7 +41,7 @@ char* getStrListeValue(strListeElem* listP, int index)
     {
         if (listP->next == NULL)
         {
-            printf("Coudn't get value, returning NULL : index out of range\n");
+            // printf("Coudn't get value, returning NULL : index out of range\n");
             return NULL;
         }
         else
@@ -122,7 +122,7 @@ char* popIndexStrList(strListeElem** pointerToListP, int index)
     {
         if (listP->next == NULL)
         {
-            printf("Coudn't pop value, returning NULL : index out of range\n");
+            // printf("Coudn't pop value, returning NULL : index out of range\n");
             return NULL;
         }
         else
@@ -157,17 +157,35 @@ int lengthStrList(strListeElem* listP)
     return cmp;
 }
 
+// Get index of the given value. Returns -1 if no values matched the given string
 int getIndexOfStrValue(strListeElem* listP, char* value)
 {
     int cmp = 0;
-    while(listP->next != NULL && strcmp(listP->value, value) != 0)
+    while(strcmp(listP->value, value) != 0)
     {
-        cmp++;
+        if (listP->next == NULL) // If we hit the end of the list
+        {
+            return -1;
+        }
+        else
+        {
+            cmp++;
+            listP = listP->next;
+        }
+    }
+    return cmp;
+}
+
+// Creates a 'deep' copy of the given strList.
+// The string still doesn't contains the strings but the pointers !
+strListeElem* memCopyStrList(strListeElem* listP)
+{
+    strListeElem* newList = createStrListWithFirstElem(listP->value);
+    listP = listP->next;
+    while(listP != NULL)
+    {
+        appendStrList(newList, listP->value);
         listP = listP->next;
     }
-    if (listP->next != NULL)
-    {
-        return cmp;
-    }
-    else return NULL;
+    return newList;
 }

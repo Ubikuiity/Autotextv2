@@ -1,7 +1,4 @@
-#include "sources/headers/dynStrArray.h"
-#include "sources/headers/createMotor.h"
 #include "sources/headers/useMotor.h"
-#include "sources/headers/coloredPrints.h"
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -77,7 +74,8 @@ void printIntValue(int index, int val)
 reMotor* testMotorCreation()
 {
     char* myWords[] = {"hello", "cat", "slay", "slice", "slicat", "snake", "hi"};
-    reMotor* myMotor = createMotor(myWords, sizeof(myWords) / sizeof(myWords[0]));
+    strListeElem* myWordsList = createStrListFromWords(myWords, sizeof(myWords) / sizeof(myWords[0]));
+    reMotor* myMotor = createMotor(myWordsList);
 
     int numberOfStates = lengthStateList(myMotor->StateList);
     printf("\nMachine has %d states\n\n", numberOfStates);

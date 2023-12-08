@@ -15,10 +15,10 @@ void deepCopyStringWithIndex(stringWithIndex* Destination, stringWithIndex* Sour
 
 // The regex motor we use has the form of a state machine
 // Returns initial state and creates all the states and branches
-reMotor* createMotor(char* words[], int sizeWords)
+reMotor* createMotor(strListeElem* words)
 {
     stateCounter = 0;
-    strListeElem* dynWords = createStrListFromWords(words, sizeWords);
+    strListeElem* dynWords = memCopyStrList(words);  // We copy the list since we will destroy it we create the motor
     reMotor* regexMotor = malloc(sizeof(reMotor));
 
     State* firstState = createState(stateCounter, NULL, '\0');

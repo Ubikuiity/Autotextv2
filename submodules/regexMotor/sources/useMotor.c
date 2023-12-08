@@ -76,18 +76,31 @@ void nextStep(reMotor* motor, char inputChar)
             }
         }
     }
-    // Check if we hit a final state
-    for (int i=0; i<lengthIntList(nextActives); i++)
-    {
-        State* activeState = getStateListeValue(motor->StateList, *getIntListeValue(nextActives, i));
-        if (activeState->outs == NULL)  // State is final if there is no outs
-        {
-            
-        }
-    }
     
     // Prepare for next run if we didn't hit a final state
-    destroyIntList(motor->Actives);  // We remove old active list
+    destroyIntList(motor->Actives);  // We remove old active list, this needs to be changed to add history in the easy way
     motor->Actives = nextActives;
     return;
+}
+
+// Checks if we hit any final state, returns the index of the final state if we did (this index will never be 0), 0 otherwise
+int checkAndGetFinals(reMotor* motor)
+{
+    for (int i=0; i<lengthIntList(motor->Actives); i++)
+    {
+        int activeStateIndex = *getIntListeValue(motor->Actives, i);
+        State* activeState = getStateListeValue(motor->StateList, activeStateIndex);
+        if (activeState->outs == NULL)  // State is final if there is no outs
+        {
+            return activeStateIndex;
+        }
+    }
+    return 0;
+}
+
+// Reset the active states for a new run
+void restartMotorForNextRun(reMotor* motor)
+{
+    destroyIntList(motor->Actives);
+    motor->Actives = createIntListWithFirstElem(0);
 }

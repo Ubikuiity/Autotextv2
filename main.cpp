@@ -3,6 +3,7 @@ extern "C"
     #include "./submodules/regexMotor/sources/headers/useMotor.h"
     #include "./submodules/caracterReceiver/sources/headers/caracterReceiver.h"
     #include "./submodules/sendKeyboardStrikes/sources/headers/keyboardIn.h"
+    #include "./submodules/yamlHandler/sources/headers/all.h"
 }
 #include "./submodules/logger/sources/headers/logger.h"
 
@@ -12,7 +13,14 @@ extern "C"
 
 using namespace std;
 
-void nextStepWrapper(char* c, void* param);
+typedef struct paramsForCallback paramsForCallback;
+struct paramsForCallback
+{
+    reMotor* motor;
+    wordPatterns* patterns;
+};
+
+void nextStepWrapper(char* c, void* params);
 
 int main(/* int argc, char* argv[] */)
 {
@@ -23,18 +31,27 @@ int main(/* int argc, char* argv[] */)
     cout << "Logging to file : " << prefix << "\\" << filename << endl;
     mainLogger.log("> Started Logging <");
 
-    char* myWords[] = {"hello", "cat", "slay", "slice", "slicat", "snake", "hi", "sheo"};
+    mainLogger.log("Reading content of yaml input file");
 
-    reMotor* myMotor = createMotor(myWords, sizeof(myWords) / sizeof(myWords[1]));
+    char yamlWordPath[] = "D:\\VisualStudioProjects\\Autotextv2\\wordsTest.yaml";
+    wordPatterns* myPatterns = getWordPatternsFromFile(yamlWordPath);
+
+    mainLogger.log("Data read successfully !");
+
+    reMotor* myMotor = createMotor(myPatterns->words);
     mainLogger.log("Motor created");
+
+    paramsForCallback* myParams = (paramsForCallback *) malloc(sizeof(paramsForCallback));
+    myParams->motor = myMotor;
+    myParams->patterns = myPatterns;
 
     installhook();
     mainLogger.log("Keyboard hook injected");
 
-    threadProperties* myReceiver = StartReceiverAsThread(nextStepWrapper, (void*) myMotor, 0);
+    threadProperties* myReceiver = StartReceiverAsThread(nextStepWrapper, (void*) myParams, 0);
     mainLogger.log("Receiver started with motor step as callback");
 
-    std::cout << "Waiting for user input to stop ..." << std::endl;
+    std::cout << "Waiting for enter user input to stop program ..." << std::endl;
     getchar();
     std::cout << "Received stopping input" << std::endl;
 
@@ -54,10 +71,19 @@ int main(/* int argc, char* argv[] */)
 }
 
 // Wrapper for nextStep function to send it to thread as a callback
-void nextStepWrapper(char* c, void* param)
+void nextStepWrapper(char* c, void* params)
 {
-    reMotor* motor = (reMotor*) param;  // Casting argument to correct type
+    paramsForCallback* paramsCasted = (paramsForCallback*) params;  // Casting argument to correct type
+    reMotor* motor = paramsCasted->motor;
+    wordPatterns* patterns = paramsCasted->patterns;
     nextStep(motor, *c);  // Calls next step
     plotMotor(motor);  // Display motor
+    if (int finalStateIndex = checkAndGetFinals(motor))  // If we hit a final value
+    {
+        int convertedStateIndex = getIndexOfValue(motor->FinalStates, finalStateIndex);
+        char* wordDetected = getStrListeValue(motor->FinalStrings, convertedStateIndex);
+        char* replacer = getReplacerFromWord(patterns, wordDetected);
+        writeGivenString(replacer, strlen(replacer));
+    }
     return;
 }

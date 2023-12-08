@@ -1,6 +1,7 @@
 #pragma once
 
-#include "../../utils/headers/dynStrArray.h"
+#include "../../../utils/headers/dynStrArray.h"
+#include <stdlib.h>
 
 // These are the string used in file to be able to parse it
 #define PATTERN_HEADER "\n-Pattern:\n"
@@ -17,3 +18,4 @@ struct wordPatterns
 void appendPattern(wordPatterns* patterns, char* word, char* replacer);
 void displayWordPatterns(wordPatterns* patterns);
 void destroyWordPatterns(wordPatterns* patterns);
+char* getReplacerFromWord(wordPatterns* patterns, char* word);

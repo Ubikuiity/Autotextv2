@@ -30,7 +30,7 @@ int* getIntListeValue(intListeElem* listP, int index)
     {
         if (listP->next == NULL)
         {
-            printf("Coudn't get value, returning 0 : index out of range\n");
+            // printf("Coudn't get value, returning 0 : index out of range\n");
             return 0;
         }
         else
@@ -49,7 +49,7 @@ int popIndexIntList(intListeElem** pointerToListP, int index)
     {
         if (listP->next == NULL)
         {
-            printf("Coudn't pop value, returning -1 : index out of range\n");
+            // printf("Coudn't pop value, returning -1 : index out of range\n");
             return -1;
         }
         else
