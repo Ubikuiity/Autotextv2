@@ -22,6 +22,7 @@ char* popStrList(strListeElem* listP);
 char* popIndexStrList(strListeElem** pointerToListP, int index);
 
 int lengthStrList(strListeElem* listP);
+int getMaxLengthOfStringInList(strListeElem* listP);
 void itterateOverStrList(strListeElem* listP, void (*callback)(int, char*));
 void destroyStrList(strListeElem* myIntList);
 int getIndexOfStrValue(strListeElem* listP, char* value);

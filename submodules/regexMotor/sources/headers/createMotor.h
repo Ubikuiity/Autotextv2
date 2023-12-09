@@ -3,8 +3,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include "./dynStateArray.h"
-#include "../../../utils/headers/dynStrArray.h"
-#include "../../../utils/headers/dynIntArray.h"
+#include "../../../utils/headers/all.h"
 
 #define MAXINPUTSTRINGSIZE 20
 
@@ -15,6 +14,7 @@ struct reMotor
     intListeElem* Actives;  // List of active states (list of ints), this is the only dynamic attribute of reMotor
     intListeElem* FinalStates;  // List use to translate indexes from State to FinalStrings
     strListeElem* FinalStrings;  // List of strings that have been written when we reach the final state
+    intListStack* ActivesHistory;  // History of active states
 };
 
 reMotor* createMotor(strListeElem* words);

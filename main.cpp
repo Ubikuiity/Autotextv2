@@ -20,7 +20,7 @@ struct paramsForCallback
     wordPatterns* patterns;
 };
 
-void nextStepWrapper(char* c, void* params);
+int callbackWrapper(char* c, void* params);
 
 int main(/* int argc, char* argv[] */)
 {
@@ -48,7 +48,7 @@ int main(/* int argc, char* argv[] */)
     installhook();
     mainLogger.log("Keyboard hook injected");
 
-    threadProperties* myReceiver = StartReceiverAsThread(nextStepWrapper, (void*) myParams, 0);
+    threadProperties* myReceiver = StartReceiverAsThread(callbackWrapper, (void*) myParams, 0);
     mainLogger.log("Receiver started with motor step as callback");
 
     std::cout << "Waiting for enter user input to stop program ..." << std::endl;
@@ -71,11 +71,19 @@ int main(/* int argc, char* argv[] */)
 }
 
 // Wrapper for nextStep function to send it to thread as a callback
-void nextStepWrapper(char* c, void* params)
+int callbackWrapper(char* c, void* params)
 {
     paramsForCallback* paramsCasted = (paramsForCallback*) params;  // Casting argument to correct type
     reMotor* motor = paramsCasted->motor;
     wordPatterns* patterns = paramsCasted->patterns;
+
+    if(*c == '\b')  // Handle the special case of backspaces
+    {
+        undoLastStep(motor);
+        plotMotor(motor);  // Display motor
+        return 0;
+    }
+
     nextStep(motor, *c);  // Calls next step
     plotMotor(motor);  // Display motor
     if (int finalStateIndex = checkAndGetFinals(motor))  // If we hit a final value
@@ -83,7 +91,11 @@ void nextStepWrapper(char* c, void* params)
         int convertedStateIndex = getIndexOfValue(motor->FinalStates, finalStateIndex);
         char* wordDetected = getStrListeValue(motor->FinalStrings, convertedStateIndex);
         char* replacer = getReplacerFromWord(patterns, wordDetected);
+        sendBackspacesInputs(strlen(wordDetected));
         writeGivenString(replacer, strlen(replacer));
+
+        restartMotorForNextRun(motor);
+        return 1;
     }
-    return;
+    return 0;
 }

@@ -39,6 +39,10 @@ reMotor* createMotor(strListeElem* words)
     popIndexIntList(&(regexMotor->FinalStates), 0);  // Remove the false values we created to initialize
     regexMotor->Actives = createIntListWithFirstElem(0);  // Set initial state to active
 
+    int lengthOfLongestWord = getMaxLengthOfStringInList(words);
+    // We cannot put actives in the activesHistory yet since it will create a duplicate when we run motor for the first time
+    regexMotor->ActivesHistory = createIntListStackWithFirstElem(createIntListWithFirstElem(0), lengthOfLongestWord + 1);
+
     return regexMotor;
 }
 
@@ -153,5 +157,6 @@ void destroyMotor(reMotor* motor)
     // We have to manually destroy each final strings that has been allocated when creating the motor
     itterateOverStrList(motor->FinalStrings, freeString);
     destroyStrList(motor->FinalStrings);
+    destroyIntListStack(motor->ActivesHistory);
     free(motor);
 }

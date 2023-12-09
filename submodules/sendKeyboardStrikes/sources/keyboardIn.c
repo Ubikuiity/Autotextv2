@@ -193,23 +193,72 @@ void writeCharacter(char c, HKL keyboardLayout)
     }
 }
 
-// Demo function
-void SendWinKey()
+// Sends n backspace inputs to the keyboard, slightly optimised version of writeString for backspaces
+void sendBackspacesInputs(int n)
 {
-    printf("Sending 'Win'\n");
-    INPUT inputs[2];
+    HKL myLayout = GetKeyboardLayout(0);
+    BYTE state = releaseActionKeys();
+    char backspace = '\b';
+    SHORT keyCode = VkKeyScanExA(backspace, myLayout);
+    BYTE vkCode = keyCode & 0xFF;  // 2 lower order bytes are the keycode of the letter being pressed
+    BYTE shiftState = keyCode >> 8;  // higher order bits are used to know if ALT, SHIFT and CTRL are pressed
+
+    INPUT inputs[8];  // 8 is the max inputs we will send to the keyboard
     ZeroMemory(inputs, sizeof(inputs));
 
-    inputs[0].type = INPUT_KEYBOARD;
-    inputs[0].ki.wVk = VK_LWIN;
-
-    inputs[1].type = INPUT_KEYBOARD;
-    inputs[1].ki.wVk = VK_LWIN;
-    inputs[1].ki.dwFlags = KEYEVENTF_KEYUP;
-
-    UINT uSent = SendInput(ARRAYSIZE(inputs), inputs, sizeof(INPUT));
-    if (uSent != ARRAYSIZE(inputs))
+    // Pressing keys
+    if (shiftState & 1)  // We press SHIFT
     {
-        printf("SendInput failed: 0x%x\n", HRESULT_FROM_WIN32(GetLastError()));
+        inputs[0].type = INPUT_KEYBOARD;
+        inputs[0].ki.wVk = VK_SHIFT;
     }
+    if (shiftState & 2)  // We press CTRL
+    {
+        inputs[1].type = INPUT_KEYBOARD;
+        inputs[1].ki.wVk = VK_CONTROL;
+    }
+    if (shiftState & 4)  // We press ALT
+    {
+        inputs[2].type = INPUT_KEYBOARD;
+        inputs[2].ki.wVk = VK_MENU;
+    }
+
+    // Press the "letter" key
+    inputs[3].type = INPUT_KEYBOARD;
+    inputs[3].ki.wVk = vkCode;
+
+    // Now we release the keys
+    inputs[4].type = INPUT_KEYBOARD;
+    inputs[4].ki.wVk = vkCode;
+    inputs[4].ki.dwFlags = KEYEVENTF_KEYUP;
+
+    if (shiftState & 1)  // We release SHIFT
+    {
+        inputs[5].type = INPUT_KEYBOARD;
+        inputs[5].ki.wVk = VK_SHIFT;
+        inputs[5].ki.dwFlags = KEYEVENTF_KEYUP;
+    }
+    if (shiftState & 2)  // We release CTRL
+    {
+        inputs[6].type = INPUT_KEYBOARD;
+        inputs[6].ki.wVk = VK_CONTROL;
+        inputs[6].ki.dwFlags = KEYEVENTF_KEYUP;
+    }
+    if (shiftState & 4)  // We release ALT
+    {
+        inputs[7].type = INPUT_KEYBOARD;
+        inputs[7].ki.wVk = VK_MENU;
+        inputs[7].ki.dwFlags = KEYEVENTF_KEYUP;
+    }
+
+    for(int i = 0; i<n; i++)
+    {
+        // send inputs to Windows
+        UINT uSent = SendInput(ARRAYSIZE(inputs), inputs, sizeof(INPUT));
+        if (uSent != ARRAYSIZE(inputs))
+        {
+            printf("SendInput failed: 0x%x\n", HRESULT_FROM_WIN32(GetLastError()));
+        }
+    }
+    pressActionKeys(state);
 }

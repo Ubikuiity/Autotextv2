@@ -11,6 +11,7 @@
 
 void writeCharacter(char c, HKL keyboardLayout);
 void writeGivenString(char stringToWrite[], int stringLenght);
+void sendBackspacesInputs(int n);
 
 // Private functions
 

@@ -78,9 +78,23 @@ void nextStep(reMotor* motor, char inputChar)
     }
     
     // Prepare for next run if we didn't hit a final state
-    destroyIntList(motor->Actives);  // We remove old active list, this needs to be changed to add history in the easy way
+    stackIntListStack(motor->ActivesHistory, motor->Actives);  // We add the former active states to history
     motor->Actives = nextActives;
     return;
+}
+
+void undoLastStep(reMotor* motor)
+{
+    if (motor->ActivesHistory->currentSize > 1)
+    {
+        destroyIntList(motor->Actives);  // Destroy current actives
+        motor->Actives = unstackIntListStack(motor->ActivesHistory);  // Recover older states
+    }
+    else  // If we've reached the end of history, we keep resetting to initial state
+    {
+        destroyIntList(motor->Actives);
+        motor->Actives = createIntListWithFirstElem(0);
+    }
 }
 
 // Checks if we hit any final state, returns the index of the final state if we did (this index will never be 0), 0 otherwise
@@ -103,4 +117,10 @@ void restartMotorForNextRun(reMotor* motor)
 {
     destroyIntList(motor->Actives);
     motor->Actives = createIntListWithFirstElem(0);
+
+    // Reset of active states history
+    int maxHistorySize = motor->ActivesHistory->maxSize;
+    destroyIntListStack(motor->ActivesHistory);  // Delete history
+    // We cannot put actives in the activesHistory yet since it will create a duplicate when we run motor for the first time
+    motor->ActivesHistory = createIntListStackWithFirstElem(createIntListWithFirstElem(0), maxHistorySize);
 }

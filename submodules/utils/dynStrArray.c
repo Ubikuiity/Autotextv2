@@ -189,3 +189,19 @@ strListeElem* memCopyStrList(strListeElem* listP)
     }
     return newList;
 }
+
+// Returns the length of the longest string in the list
+int getMaxLengthOfStringInList(strListeElem* listP)
+{
+    int maxLength = 0;
+    while(listP->next != NULL)  // listP will take the value of the "previous" element
+    {
+        int lengthCurrent = strlen(listP->value);
+        if(lengthCurrent > maxLength)
+        {
+            maxLength = lengthCurrent;
+        }
+        listP = listP->next;
+    }
+    return maxLength;
+}

@@ -102,18 +102,27 @@ void waitForCharacter(SOCKET* ListenSocketPtr, char* cPtr, int verbose)
 // encapsulated version ready to be sent to _beginthread
 void encapsulatedWaitForCharacter(void* vparams)
 {
+    time_t lastBufferClearanceTime = 0;
     threadProperties* params = (threadProperties*) vparams;  // Casting type
     WaitForSingleObject(params->mutexHandle, INFINITE);  // TODO We should add finite time and check that we indeed got the mutex
     while(TRUE)
     {
         waitForCharacter(params->Listener, params->ChrBuffer, 0);
+        // If last time we asked to clear the buffer was 1 second or less, skip the paquets
+        if ((time(NULL)-lastBufferClearanceTime) < BUFFER_CLEARANCE_DURATION)
+        {
+            continue;
+        }  // else we process the paquet
         if (!strcmp(params->ChrBuffer, STOP_RECEIVER_SIGNAL))  // If we receive STOP, we stop
         {
             break;
         }
-        else
+        else  // Else we call callback function
         {
-            params->callback(params->ChrBuffer, params->paramsForCallback);  // Else we call callback function
+            if (params->callback(params->ChrBuffer, params->paramsForCallback) == 1)  // This calls the callback
+            {
+                lastBufferClearanceTime = time(NULL);  // We set 
+            }
         }
     }
 
@@ -131,7 +140,7 @@ void clearReceiver(SOCKET* ListenSocketPtr)
 
 // Creates the caracter receiver as a thread.
 // This thread will call the callback with params for callback and a given caracter each time we press the keyboard key
-threadProperties* StartReceiverAsThread(void (*callback)(char*, void*), void* paramsForCallback, int verbose)
+threadProperties* StartReceiverAsThread(int (*callback)(char*, void*), void* paramsForCallback, int verbose)
 {
     threadProperties* thrdProps = malloc(sizeof(threadProperties));
     
