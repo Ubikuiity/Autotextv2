@@ -5,3 +5,4 @@ Keyboardhook/
 myPlayground/
 *.exe
 **/build/
+*.bat
