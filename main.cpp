@@ -22,7 +22,8 @@ struct paramsForCallback
 
 int callbackWrapper(char* c, void* params);
 
-int main(/* int argc, char* argv[] */)
+// This main function should have been made in C ....
+int main()
 {
     string filename;  // name of file where we are going to log
     GetLogfileName(&filename);
