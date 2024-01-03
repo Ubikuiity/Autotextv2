@@ -6,3 +6,4 @@ myPlayground/
 *.exe
 **/build/
 *.bat
+oldMain/

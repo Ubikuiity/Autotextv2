@@ -10,7 +10,7 @@ EditPanel::EditPanel(wxFrame* parent) : wxPanel(parent)
     wxButton* saveButton = new wxButton(this, wxID_ANY, "Save", wxPoint(10, 215), wxSize(100, 25));
 
     wxTextCtrl* keyWordControl = new wxTextCtrl(this, wxID_ANY, "", wxPoint(125, 10), wxSize(200, 20));
-    wxTextCtrl* replacerControl = new wxTextCtrl(this, wxID_ANY, "", wxPoint(125, 35), wxSize(200, 205));
+    wxTextCtrl* replacerControl = new wxTextCtrl(this, wxID_ANY, "", wxPoint(125, 35), wxSize(200, 205), wxTE_MULTILINE);
 
     addButton->Bind(wxEVT_BUTTON, &EditPanel::addKeyWord, this);
     this->removeButton->Bind(wxEVT_BUTTON, &EditPanel::removeKeyWord, this);
