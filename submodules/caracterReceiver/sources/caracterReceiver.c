@@ -212,10 +212,13 @@ void StopReceiver(threadProperties* propertiesOfThread)
 {
     sendStopSignal();
     // Wait for receiver to be closed, and then destroy the object
+    int cnt = 0;  // This is used to force closure after 3 seconds if receiver didn't close properly
     DWORD res = WaitForSingleObject(propertiesOfThread->mutexHandle, 1000);
-    while (res != WAIT_OBJECT_0)  // We send request to close the socket every second if it doesn't close properly
+    while (res != WAIT_OBJECT_0 && cnt < 3)  // We send request to close the socket every second if it doesn't close properly
     {
         printf("Receiver not stopped yet ... Error : %#010x/", res);
+        cnt ++;
+        sendStopSignal();  // Sends signal again
         res = WaitForSingleObject(propertiesOfThread->mutexHandle, 1000);
     }
     

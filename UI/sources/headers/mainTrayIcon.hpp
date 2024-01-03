@@ -3,6 +3,8 @@
 #include <wx/wx.h>
 #include <wx/taskbar.h>
 #include "ID.hpp"
+
+class mainTrayIcon;  // Since we have mutual inclusions, we must declare the class exist so mainFrame can use it
 #include "mainFrame.hpp"
 
 // Headers for regexMotor
@@ -32,10 +34,18 @@ class mainTrayIcon : public wxTaskBarIcon
     wordPatterns* mPatterns;
     reMotor* mMotor;
     threadProperties* mReceiver;
+    bool mMotorIsRunning;
 
     public:
     mainTrayIcon();
     virtual wxMenu* CreatePopupMenu();
+    void informSubFrameClosing();
+
+    // Regex Motor functionnalities
+    bool getMotorState();
+    void startStopEmbeddedMotor();
+    void startEmbeddedMotor();
+    void stopEmbeddedMotor();
 };
 
 typedef struct paramsForCallback paramsForCallback;

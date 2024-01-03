@@ -2,6 +2,9 @@
 
 #include <wx/wx.h>
 #include "ID.hpp"
+
+class MainFrame;  // Since we have mutual inclusions, we must declare class so mainTrayIcon knows what it is
+#include "mainTrayIcon.hpp"
 #include "../subPanels/headers/homePanel.hpp"
 #include "../subPanels/headers/editPanel.hpp"
 
@@ -17,9 +20,11 @@ class MainFrame : public wxFrame
     wxPanel* currentPanel;
     wxBoxSizer* sizer;
 
-    MainFrame*& trayIconPtrToThis;
+    mainTrayIcon* parentTrayIcon;
+    bool motorStoppedByEdition;
 
     public:
-    MainFrame(const wxString& title, MainFrame*& trayIconFrame);
+    MainFrame(const wxString& title, mainTrayIcon* trayIconPtr);
     void OnCloseWindow(wxCloseEvent& event);
+    mainTrayIcon* GetParentTrayIcon();
 };

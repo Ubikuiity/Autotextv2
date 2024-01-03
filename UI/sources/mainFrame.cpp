@@ -1,8 +1,8 @@
 #include "./headers/mainFrame.hpp"
 #include <wx/event.h>
 
-MainFrame::MainFrame(const wxString& title, MainFrame*& trayIconFrame) : wxFrame(NULL, wxID_ANY, title),
-trayIconPtrToThis(trayIconFrame)
+MainFrame::MainFrame(const wxString& title, mainTrayIcon* trayIconPtr) : wxFrame(NULL, wxID_ANY, title),
+parentTrayIcon(trayIconPtr), motorStoppedByEdition(false)
 {
     Bind(wxEVT_CLOSE_WINDOW, &MainFrame::OnCloseWindow, this);
 
@@ -61,6 +61,13 @@ void MainFrame::ChangeToHomePanel(wxCommandEvent& event)
     this->hPanel->Show();
     this->currentPanel = this->hPanel;
     this->sizer->Layout();
+
+    if (this->motorStoppedByEdition)
+    {
+        this->parentTrayIcon->startEmbeddedMotor();
+        SetStatusText("Detection has been reactivated");
+        this->motorStoppedByEdition = false;
+    }
 }
 
 void MainFrame::ChangeToEditPanel(wxCommandEvent& event)
@@ -71,6 +78,18 @@ void MainFrame::ChangeToEditPanel(wxCommandEvent& event)
     this->ePanel->Show();
     this->currentPanel = this->ePanel;
     this->sizer->Layout();
+
+    if (this->parentTrayIcon->getMotorState())  // If motor is running
+    {
+        this->parentTrayIcon->stopEmbeddedMotor();
+        SetStatusText("Detection stopped while editing");
+        this->motorStoppedByEdition = true;
+    }
+}
+
+mainTrayIcon* MainFrame::GetParentTrayIcon()
+{
+    return this->parentTrayIcon;
 }
 
 void MainFrame::OnExit(wxCommandEvent& event)
@@ -80,7 +99,11 @@ void MainFrame::OnExit(wxCommandEvent& event)
 
 void MainFrame::OnCloseWindow(wxCloseEvent& event)
 {
-    this->trayIconPtrToThis = NULL;
+    if (this->motorStoppedByEdition)
+    {
+        this->parentTrayIcon->startEmbeddedMotor();
+    }
+    this->parentTrayIcon->informSubFrameClosing();  // Send information to parent that windows has been closed
     event.Skip();
 }
 
