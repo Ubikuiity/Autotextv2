@@ -18,6 +18,7 @@ strListeElem* createStrListFromWords(char* words[], int sizeOfArray);
 char* getStrListeValue(strListeElem* list, int place);
 
 void appendStrList(strListeElem* listP, char* val);
+// void changeIndexValueStrList(strListeElem* listP, int index, char* newValue);
 char* popStrList(strListeElem* listP);
 char* popIndexStrList(strListeElem** pointerToListP, int index);
 

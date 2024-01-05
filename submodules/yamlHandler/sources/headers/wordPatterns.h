@@ -15,7 +15,13 @@ struct wordPatterns
     strListeElem* replacements;  // patterns that will replace the word
 };
 
-void appendPattern(wordPatterns* patterns, char* word, char* replacer);
+wordPatterns* createWordPatternsFromFirstPair(const char* word, const char* replacer);
+
+void appendPattern(wordPatterns* patterns, const char* word, const char* replacer);
+// void removePattern(wordPatterns* pattern, int index);
+// void changePatternWord(wordPatterns* pattern, int index, char* word);
+// void changePatternReplacer(wordPatterns* pattern, int index, char* replacer);
+
 void displayWordPatterns(wordPatterns* patterns);
 void destroyWordPatterns(wordPatterns* patterns);
 char* getReplacerFromWord(wordPatterns* patterns, char* word);

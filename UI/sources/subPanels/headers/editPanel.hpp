@@ -2,6 +2,11 @@
 #include <wx/wx.h>
 #include <string>
 
+extern "C"
+{
+    #include "../../../../submodules/yamlHandler/sources/headers/all.h"
+}
+
 class EditPanel : public wxPanel
 {
 public:
@@ -9,10 +14,20 @@ public:
 
 private:
     wxListBox* boxListOfKeyWords;
-    wxArrayString keyWordsArray;
-    wxButton* removeButton;  // We need pointer for this button to lock it when we remove to make sure we don't mess up
+    wxButton* removeButton;
+    wxTextCtrl* keyWordControl;
+    wxTextCtrl* replacerControl;
+    
+    wxArrayString keyWordsArray;  // This array will store the editable keywords
+    wxArrayString replacersArray;  // This array will store the editable replacer strings
+
+    // Events
 
     void addKeyWord(wxCommandEvent& event);
     void removeKeyWord(wxCommandEvent& event);
     void saveKeyWordsFromUI(wxCommandEvent& event);
+    void changeSelectedWord(wxCommandEvent& event);
+    void replacerTextChange(wxCommandEvent& event);
+    void keyWordTextChange(wxCommandEvent& event);
+    void getWordsFromFile();
 };

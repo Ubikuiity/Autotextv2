@@ -81,6 +81,25 @@ void appendStrList(strListeElem* listP, char* val)
     listP->next = newElem;  // set the link
 }
 
+// // Change value of the string pointer at given index
+// void changeIndexValueStrList(strListeElem* listP, int index, char* newValue)
+// {
+//     for (int i=0; i<index; i++)
+//     {
+//         if (listP->next == NULL)
+//         {
+//             // printf("Coudn't pop value, returning NULL : index out of range\n");
+//             return;
+//         }
+//         else
+//         {
+//             listP = listP->next;
+//         }
+//     }
+//     // When at desired index, we change the pointer
+//     listP->value = newValue;
+// }
+
 // Calls callback on all values of list with parameters (index, string)
 void itterateOverStrList(strListeElem* listP, void (*callback)(int, char*))
 {
