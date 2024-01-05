@@ -7,3 +7,4 @@ myPlayground/
 **/build/
 *.bat
 oldMain/
+*.yaml
