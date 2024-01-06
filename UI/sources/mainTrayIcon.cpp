@@ -9,14 +9,14 @@ mainTrayIcon::mainTrayIcon() : wxTaskBarIcon(), mMotorIsRunning(false)
     // Creating Logger
     string filename;  // name of file where we are going to log
     GetLogfileName(&filename);
-    string prefix = "D:\\VisualStudioProjects\\Autotextv2\\output\\log";  // Hardcoded path here
-    this->mLogger = new Logger(prefix + "\\" + filename);  // Creating Logger
+    string logPath = getPathOfExeAsString() + "/" + PATHS_LOGFOLDER + "/" + filename;  // TODO Add creation of folder log if non existent
+    this->mLogger = new Logger(logPath);  // Creating Logger
     this->mLogger->log("> Started Logging <");
 
     this->startEmbeddedMotor();
 
     // UI tasks
-    this->myIcon = wxIcon(wxIconLocation("D:/VisualStudioProjects/Autotextv2/UI/icon.ico"));
+    this->myIcon = wxIcon(wxIconLocation(getPathOfExeAsString() + "/" + PATHS_RESFOLDER + "/" + PATHS_ICONFILE));
     this->SetIcon(this->myIcon);
 
     this->mFrame = NULL;
@@ -114,8 +114,9 @@ void mainTrayIcon::startEmbeddedMotor()
     this->mLogger->log("Starting motor ...");
     this->mLogger->log("Reading content of yaml input file");
 
-    char yamlWordPath[] = "D:\\VisualStudioProjects\\Autotextv2\\wordsTest.yaml";  // Hardcoded path here
-    this->mPatterns = getWordPatternsFromFile(yamlWordPath);
+    string yamlWordPath = getPathOfExeAsString() + "/" + PATHS_WORDSFILE;
+
+    this->mPatterns = getWordPatternsFromFile(yamlWordPath.c_str());
 
     this->mLogger->log("Data read successfully !");
 

@@ -5,7 +5,7 @@
 // - The first one for words
 // - The second one for replacers
 // ! We need to destroy the wordsPatterns returned by this function with destroyWordPatterns after use !
-wordPatterns* getWordPatternsFromFile(char* filePath)
+wordPatterns* getWordPatternsFromFile(const char* filePath)
 {
     char* buf = fileToString(filePath);
     wordPatterns* Patterns = findWordsAndReplacements(buf);
@@ -15,7 +15,7 @@ wordPatterns* getWordPatternsFromFile(char* filePath)
 
 // Reads a file and returns the content of it as a string
 // ! We need to free the returned string after use !
-char* fileToString(char* pathOfFile)
+char* fileToString(const char* pathOfFile)
 {
     FILE* file = NULL;
     file = fopen(pathOfFile, "r");

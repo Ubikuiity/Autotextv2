@@ -3,6 +3,7 @@
 #include <wx/wx.h>
 #include <wx/taskbar.h>
 #include "ID.hpp"
+#include "paths.hpp"
 
 class mainTrayIcon;  // Since we have mutual inclusions, we must declare the class exist so mainFrame can use it
 #include "mainFrame.hpp"

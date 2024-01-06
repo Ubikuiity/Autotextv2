@@ -109,6 +109,6 @@ void MainFrame::OnCloseWindow(wxCloseEvent& event)
 
 void MainFrame::OnAbout(wxCommandEvent& event)
 {
-    wxMessageBox("Custom Autotext\nBy Ubikuiity\nCode available here",
-                "Autotext v2", wxOK | wxICON_INFORMATION);
+    wxMessageBox("Custom Autotext\nBy Ubikuiity\nCode available on Github",
+                "Autotext v2", wxICON_INFORMATION, this);
 }

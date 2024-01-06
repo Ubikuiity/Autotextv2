@@ -137,7 +137,8 @@ void EditPanel::saveKeyWordsFromUI(wxCommandEvent& event)
 
     destroyWordPatterns(editedPatterns);  // We free the memory
 
-    wxMessageBox("Data saved successfully", "Save", wxOK | wxICON_INFORMATION);
+    wxString message = wxString::Format("Data saved successfully.\n%i words saved", nbOfWords);
+    wxMessageBox(message, "Save", wxOK | wxICON_INFORMATION);
 }
 
 // Utils

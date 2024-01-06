@@ -5,11 +5,11 @@
 
 // Public functions
 
-wordPatterns* getWordPatternsFromFile(char* filePath);
+wordPatterns* getWordPatternsFromFile(const char* filePath);
 
 // Private functions
 
-char* fileToString(char* pathOfFile);
+char* fileToString(const char* pathOfFile);
 wordPatterns* findWordsAndReplacements(char* buffer);
 void findWordAndReplacer(wordPatterns* Patterns, char* buffer, int* firstRun);
 char* findLine(char** bufferPtr, char* lineName);
