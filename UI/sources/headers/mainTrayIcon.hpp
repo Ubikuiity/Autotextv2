@@ -2,6 +2,7 @@
 
 #include <wx/wx.h>
 #include <wx/taskbar.h>
+#include <filesystem>
 #include "ID.hpp"
 #include "paths.hpp"
 

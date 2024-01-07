@@ -9,7 +9,9 @@ mainTrayIcon::mainTrayIcon() : wxTaskBarIcon(), mMotorIsRunning(false)
     // Creating Logger
     string filename;  // name of file where we are going to log
     GetLogfileName(&filename);
-    string logPath = getPathOfExeAsString() + "/" + PATHS_LOGFOLDER + "/" + filename;  // TODO Add creation of folder log if non existent
+    string logFolder = getPathOfExeAsString() + "/" + PATHS_LOGFOLDER;
+    filesystem::create_directory(logFolder);  // Create directory if it doesn't exist
+    string logPath = getPathOfExeAsString() + "/" + PATHS_LOGFOLDER + "/" + filename;
     this->mLogger = new Logger(logPath);  // Creating Logger
     this->mLogger->log("> Started Logging <");
 

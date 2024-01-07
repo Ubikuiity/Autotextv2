@@ -1,7 +1,7 @@
 #include "./headers/yamlWriter.h"
 
 // This functions takes a wordPatterns structure as input and writes a file that can be read to recreate the wordPatterns structure
-void writeFileFromWordPatterns(char* pathOfFile, wordPatterns* patterns)
+void writeFileFromWordPatterns(const char* pathOfFile, wordPatterns* patterns)
 {
     FILE* file = NULL;
     file = fopen(pathOfFile, "w");

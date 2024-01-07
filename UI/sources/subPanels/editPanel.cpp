@@ -1,5 +1,7 @@
 #include "./headers/editPanel.hpp"
 
+using namespace std;
+
 void wipeContentOfFile(char* pathOfFile);
 
 EditPanel::EditPanel(wxFrame* parent) : wxPanel(parent)
@@ -98,8 +100,8 @@ void EditPanel::keyWordTextChange(wxCommandEvent& event)
 
 void EditPanel::getWordsFromFile()
 {
-    char yamlWordPath[] = "D:\\VisualStudioProjects\\Autotextv2\\wordsTest.yaml";  // Hardcoded path here
-    wordPatterns* filePatterns = getWordPatternsFromFile(yamlWordPath);
+    string yamlWordPath = getPathOfExeAsString() + "/" + PATHS_WORDSFILE;
+    wordPatterns* filePatterns = getWordPatternsFromFile(yamlWordPath.c_str());
 
     // Resets arrays (Probably not necessary)
     this->keyWordsArray.Clear();
@@ -118,11 +120,11 @@ void EditPanel::getWordsFromFile()
 // TODO add backup file ?
 void EditPanel::saveKeyWordsFromUI(wxCommandEvent& event)
 {
-    char yamlWordPath[] = "D:\\VisualStudioProjects\\Autotextv2\\wordsTest.yaml";  // Hardcoded path here
+    string yamlWordPath = getPathOfExeAsString() + "/" + PATHS_WORDSFILE;
     int nbOfWords = this->keyWordsArray.GetCount();
     if (nbOfWords < 1)  // If there is 0 item in the list
     {
-        wipeContentOfFile(yamlWordPath);
+        wipeContentOfFile(yamlWordPath.c_str());
         wxMessageBox("Data saved successfully (0 keywords saved)", "Save", wxOK | wxICON_INFORMATION);
         return;
     }
@@ -133,7 +135,7 @@ void EditPanel::saveKeyWordsFromUI(wxCommandEvent& event)
         appendPattern(editedPatterns, this->keyWordsArray[i].mb_str(), this->replacersArray[i].mb_str());
     }
 
-    writeFileFromWordPatterns(yamlWordPath, editedPatterns);
+    writeFileFromWordPatterns(yamlWordPath.c_str(), editedPatterns);
 
     destroyWordPatterns(editedPatterns);  // We free the memory
 
@@ -143,7 +145,7 @@ void EditPanel::saveKeyWordsFromUI(wxCommandEvent& event)
 
 // Utils
 
-void wipeContentOfFile(char* pathOfFile)
+void wipeContentOfFile(const char* pathOfFile)
 {
     FILE* file = NULL;
     file = fopen(pathOfFile, "w");  // This clears the file

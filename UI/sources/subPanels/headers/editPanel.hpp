@@ -1,6 +1,7 @@
 #pragma once
 #include <wx/wx.h>
 #include <string>
+#include "../../headers/paths.hpp"
 
 extern "C"
 {
