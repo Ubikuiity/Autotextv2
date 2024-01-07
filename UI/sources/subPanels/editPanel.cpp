@@ -2,7 +2,7 @@
 
 using namespace std;
 
-void wipeContentOfFile(char* pathOfFile);
+void wipeContentOfFile(const char* pathOfFile);
 
 EditPanel::EditPanel(wxFrame* parent) : wxPanel(parent)
 {

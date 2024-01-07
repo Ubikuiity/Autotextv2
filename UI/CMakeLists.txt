@@ -5,7 +5,7 @@ set(CMAKE_CXX_STANDARD 17)  # C++17
 project(uiMain)
 
 # Crée un executable
-add_executable(uiMain WIN32 main.cpp)
+add_executable(uiMain WIN32 main.cpp icon.rc)
 
 # Add sources
 add_subdirectory(sources)
