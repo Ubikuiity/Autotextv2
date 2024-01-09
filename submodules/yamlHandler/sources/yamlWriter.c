@@ -1,14 +1,14 @@
 #include "./headers/yamlWriter.h"
 
 // This functions takes a wordPatterns structure as input and writes a file that can be read to recreate the wordPatterns structure
-void writeFileFromWordPatterns(const char* pathOfFile, wordPatterns* patterns)
+int writeFileFromWordPatterns(const char* pathOfFile, wordPatterns* patterns)
 {
     FILE* file = NULL;
     file = fopen(pathOfFile, "w");
     if (file == NULL)
     {
         printf("Something unexpected happend when opening");
-        return;
+        return 1;
     }
 
     int nbPatterns = lengthStrList(patterns->words);
@@ -22,4 +22,6 @@ void writeFileFromWordPatterns(const char* pathOfFile, wordPatterns* patterns)
 
     // Once we've done each pattern, we close the file
     fclose(file);
+
+    return 0;
 }

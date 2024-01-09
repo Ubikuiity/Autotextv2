@@ -3,4 +3,4 @@
 #include "wordPatterns.h"
 #include  <stdio.h>
 
-void writeFileFromWordPatterns(const char* pathOfFile, wordPatterns* patterns);
+int writeFileFromWordPatterns(const char* pathOfFile, wordPatterns* patterns);

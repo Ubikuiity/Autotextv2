@@ -3,8 +3,8 @@
 
 int main()
 {
-    char* filePath = "D:\\VisualStudioProjects\\Autotextv2\\submodules\\yamlHandler\\wordsTest.yaml";
-    char* writeFilePath = "D:\\VisualStudioProjects\\Autotextv2\\submodules\\yamlHandler\\wordsTestBackup.yaml";
+    char* filePath = "C:\\Users\\Fabien\\AppData\\Roaming\\Autotext\\words.yaml";
+    char* writeFilePath = "C:\\Users\\Fabien\\AppData\\Roaming\\AutotextwordsTestBackup.yaml";
 
     wordPatterns* Patterns = getWordPatternsFromFile(filePath);
     displayWordPatterns(Patterns);

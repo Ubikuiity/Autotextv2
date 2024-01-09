@@ -27,7 +27,8 @@ set_property(TARGET keyboardHook PROPERTY IMPORTED_IMPLIB "${KEYBOARDHOOK_DLL_PA
 target_link_libraries(uiMain keyboardHook)
 
 # Add WxWidgets
-find_package(wxWidgets REQUIRED net gl core base)
+# find_package(wxWidgets REQUIRED net gl core base)
+find_package(wxWidgets REQUIRED COMPONENTS core base)
 include(${wxWidgets_USE_FILE})
 target_link_libraries(uiMain ${wxWidgets_LIBRARIES})
  

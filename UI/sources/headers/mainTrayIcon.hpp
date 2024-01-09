@@ -45,9 +45,9 @@ class mainTrayIcon : public wxTaskBarIcon
 
     // Regex Motor functionnalities
     bool getMotorState();
-    void startStopEmbeddedMotor();
-    void startEmbeddedMotor();
-    void stopEmbeddedMotor();
+    bool startStopEmbeddedMotor();
+    bool startEmbeddedMotor();
+    bool stopEmbeddedMotor();
 };
 
 typedef struct paramsForCallback paramsForCallback;

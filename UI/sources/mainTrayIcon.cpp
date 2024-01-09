@@ -6,14 +6,17 @@ int callbackWrapper(char* c, void* params);
 
 mainTrayIcon::mainTrayIcon() : wxTaskBarIcon(), mMotorIsRunning(false)
 {
+    // Need to create Appdata folder and subfolders
+    int appDataCreated = createAppDataRessourcesIfNotExistent();
+
     // Creating Logger
     string filename;  // name of file where we are going to log
     GetLogfileName(&filename);
-    string logFolder = getPathOfExeAsString() + "/" + PATHS_LOGFOLDER;
-    filesystem::create_directory(logFolder);  // Create directory if it doesn't exist
-    string logPath = getPathOfExeAsString() + "/" + PATHS_LOGFOLDER + "/" + filename;
+    string logFolder = getAppdataAsString() + "/" + PATHS_PROGRAMNAME + "/" + PATHS_LOGFOLDER;
+    string logPath = logFolder + "/" + filename;
     this->mLogger = new Logger(logPath);  // Creating Logger
     this->mLogger->log("> Started Logging <");
+    this->mLogger->log("AppData files created (code) : " + appDataCreated);
 
     this->startEmbeddedMotor();
 
@@ -90,35 +93,55 @@ bool mainTrayIcon::getMotorState()
 }
 
 // Starts motor if stopped, stops it if started
-void mainTrayIcon::startStopEmbeddedMotor()
+// Returns true if a change was made, false otherwise
+bool mainTrayIcon::startStopEmbeddedMotor()
 {
     if (this->mMotorIsRunning)
     {
-        stopEmbeddedMotor();
-        this->mFrame->SetStatusText("Detection disabled");
+        if (stopEmbeddedMotor())
+        {
+            this->mFrame->SetStatusText("Detection disabled");
+            return true;
+        }
+        else
+        {
+            return false;
+        }
     }
     else
     {
-        startEmbeddedMotor();
-        this->mFrame->SetStatusText("Detection active...");
+        if (startEmbeddedMotor())
+        {
+            this->mFrame->SetStatusText("Detection active");
+            return true;
+        }
+        else
+        {
+            return false;
+        }
     }
 }
 
 // Starts the motor inside the trayIcon
-void mainTrayIcon::startEmbeddedMotor()
+bool mainTrayIcon::startEmbeddedMotor()
 {
     if(this->mMotorIsRunning)  // Pass if motor is already running
     {
         this->mLogger->log("Motor not started because already running");
-        return;
+        return false;
     }
     // Reading YAML file
     this->mLogger->log("Starting motor ...");
     this->mLogger->log("Reading content of yaml input file");
 
-    string yamlWordPath = getPathOfExeAsString() + "/" + PATHS_WORDSFILE;
+    string yamlWordPath = getAppdataAsString() + "/" + PATHS_PROGRAMNAME + "/" + PATHS_WORDSFILE;
 
     this->mPatterns = getWordPatternsFromFile(yamlWordPath.c_str());
+    if (this->mPatterns == NULL)
+    {
+        this->mLogger->log("Coudn't start motor because there are no words detected in yaml file");
+        return false;
+    }
 
     this->mLogger->log("Data read successfully !");
 
@@ -139,14 +162,15 @@ void mainTrayIcon::startEmbeddedMotor()
     this->mLogger->log("Motor started successfully");
 
     this->mMotorIsRunning = true;
+    return true;
 }
 
-void mainTrayIcon::stopEmbeddedMotor()
+bool mainTrayIcon::stopEmbeddedMotor()
 {
     if(!this->mMotorIsRunning)  // Pass if motor is not running
     {
         this->mLogger->log("Motor not stoped because not running");
-        return;
+        return false;
     }
     // Clear memory of the regex motor
     this->mLogger->log("Stopping motor and clearing memory ...");
@@ -165,6 +189,7 @@ void mainTrayIcon::stopEmbeddedMotor()
     this->mLogger->log("Motor was stopped successfully");
 
     this->mMotorIsRunning = false;
+    return true;
 }
 
 // Wrapper for nextStep function to send it to thread as a callback

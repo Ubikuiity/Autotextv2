@@ -5,6 +5,7 @@
 // - The first one for words
 // - The second one for replacers
 // ! We need to destroy the wordsPatterns returned by this function with destroyWordPatterns after use !
+// If there are no words in the given file, we return NULL and no memory is allocated
 wordPatterns* getWordPatternsFromFile(const char* filePath)
 {
     char* buf = fileToString(filePath);
@@ -21,7 +22,7 @@ char* fileToString(const char* pathOfFile)
     file = fopen(pathOfFile, "r");
     if (file == NULL)
     {
-        printf("Coudn't read file, unexpected error");
+        // printf("Coudn't read file, unexpected error");
         return NULL;
     }
     fseek(file, 0, SEEK_END);  // Get to the end
@@ -48,6 +49,7 @@ char* fileToString(const char* pathOfFile)
 // - The first one for words
 // - The second one for replacers
 // ! We need to destroy the wordsPatterns returned by this function with destroyWordPatterns after use !
+// If there are no words in the given file, we return NULL and no memory is allocated
 wordPatterns* findWordsAndReplacements(char* buffer)
 {
     wordPatterns* Patterns = malloc(sizeof(wordPatterns));
@@ -58,6 +60,12 @@ wordPatterns* findWordsAndReplacements(char* buffer)
     // First we need to advance to the first PATTERN_HEADER we find
     while(customStrCmp(buffer + index, PATTERN_HEADER) != 0)
     {
+        if (customStrCmp(buffer + index, PATTERN_HEADER) == 2)  // If we reached the end of the file without finding a pattern
+        {
+            free(Patterns);
+            // printf("Reached end of file, returning NULL");
+            return NULL;
+        }
         index++;
     }
     buffer = buffer + index + strlen(PATTERN_HEADER);
@@ -98,6 +106,12 @@ wordPatterns* findWordsAndReplacements(char* buffer)
         buffer = buffer + index + strlen(PATTERN_HEADER);  // offsets buffer by the index + size of the header
 
         index = 0;
+    }
+    
+    if (firstRun)
+    {
+        free(Patterns);
+        return NULL;
     }
 
     return Patterns;
@@ -189,11 +203,16 @@ int findLineLength(char* buffer, char* lineName)
 
 // This function does the same job as strcmp, but returns 0 if str2 reaches the end (no matter if str1 is not over)
 // For example "Hello, my name is greg" and "Hello" will match
+// return 2 if we didn't find the pattern and reached the end of str2
 int customStrCmp(char* str1, char* str2)
 {
     int i = 0;
     while(str2[i] != '\0')
     {
+        if (str1[i] == '\0')
+        {
+            return 2;
+        }
         if(str1[i] != str2[i])
         {
             return 1;

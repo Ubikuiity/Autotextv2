@@ -28,10 +28,10 @@ EditPanel::EditPanel(wxFrame* parent) : wxPanel(parent)
 
 void EditPanel::addKeyWord(wxCommandEvent& event)
 {
-    this->keyWordsArray.Add("New");
+    this->keyWordsArray.Add("new");
     this->replacersArray.Add("");
 
-    this->boxListOfKeyWords->Append("New");
+    this->boxListOfKeyWords->Append("new");
     this->boxListOfKeyWords->SetSelection(this->keyWordsArray.GetCount()-1);  // Set selection on last item ("New")
     wxCommandEvent dummyEvent;
     this->changeSelectedWord(dummyEvent);
@@ -43,6 +43,7 @@ void EditPanel::removeKeyWord(wxCommandEvent& event)
     int activeIndex = this->boxListOfKeyWords->GetSelection();
     if(activeIndex == wxNOT_FOUND)
     {
+        this->removeButton->Enable();
         return;  // No item is selected, we skip
     }
     // Remove the selected element
@@ -52,10 +53,11 @@ void EditPanel::removeKeyWord(wxCommandEvent& event)
     this->boxListOfKeyWords->Delete(activeIndex);
     if (activeIndex  > 0)
     {
-        this->boxListOfKeyWords->SetSelection(activeIndex - 1);
-        wxCommandEvent dummyEvent;
-        this->changeSelectedWord(dummyEvent);
+        this->boxListOfKeyWords->SetSelection(activeIndex - 1);  // Change selection to upper value
     }
+
+    wxCommandEvent dummyEvent;
+    this->changeSelectedWord(dummyEvent);  // Refresh the right text boxes
 
     this->removeButton->Enable();
 }
@@ -63,9 +65,11 @@ void EditPanel::removeKeyWord(wxCommandEvent& event)
 void EditPanel::changeSelectedWord(wxCommandEvent& event)
 {
     int activeIndex = this->boxListOfKeyWords->GetSelection();
-    if(activeIndex == wxNOT_FOUND)
+    if(activeIndex == wxNOT_FOUND)  // No items is selected
     {
-        return;  // No item is selected, we skip
+        this->keyWordControl->ChangeValue("");  // Empty the fields
+        this->replacerControl->ChangeValue("");  // Empty the fields
+        return;
     }
     this->keyWordControl->ChangeValue(this->keyWordsArray[activeIndex]);
     this->replacerControl->ChangeValue(this->replacersArray[activeIndex]);
@@ -100,27 +104,29 @@ void EditPanel::keyWordTextChange(wxCommandEvent& event)
 
 void EditPanel::getWordsFromFile()
 {
-    string yamlWordPath = getPathOfExeAsString() + "/" + PATHS_WORDSFILE;
+    string yamlWordPath = getAppdataAsString() + "/" + PATHS_PROGRAMNAME + "/" + PATHS_WORDSFILE;
     wordPatterns* filePatterns = getWordPatternsFromFile(yamlWordPath.c_str());
 
     // Resets arrays (Probably not necessary)
     this->keyWordsArray.Clear();
     this->replacersArray.Clear();
 
-    for(int i=0; i<lengthStrList(filePatterns->words); i++)
+    if (filePatterns != NULL)  // If no patterns were found, we skip
     {
-        this->keyWordsArray.Add(getStrListeValue(filePatterns->words, i));
-        this->replacersArray.Add(getStrListeValue(filePatterns->replacements, i));
+        for(int i=0; i<lengthStrList(filePatterns->words); i++)
+        {
+            this->keyWordsArray.Add(getStrListeValue(filePatterns->words, i));
+            this->replacersArray.Add(getStrListeValue(filePatterns->replacements, i));
+        }
+        destroyWordPatterns(filePatterns);
     }
-
-    destroyWordPatterns(filePatterns);
 }
 
 // Save edited words to file
 // TODO add backup file ?
 void EditPanel::saveKeyWordsFromUI(wxCommandEvent& event)
 {
-    string yamlWordPath = getPathOfExeAsString() + "/" + PATHS_WORDSFILE;
+    string yamlWordPath = getAppdataAsString() + "/" + PATHS_PROGRAMNAME + "/" + PATHS_WORDSFILE;
     int nbOfWords = this->keyWordsArray.GetCount();
     if (nbOfWords < 1)  // If there is 0 item in the list
     {
