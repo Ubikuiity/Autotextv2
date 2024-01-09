@@ -126,6 +126,22 @@ void writeGivenString(char stringToWrite[], int stringLenght)
     // printf("State of former Keyboard was : %#x\n", state);
     for (int i=0; i<stringLenght; i++)
     {
+        if (stringToWrite[i] == '\\')  // This if checks for special patterns like \cb\ 
+        {
+            if (i + 3 < stringLenght)  // Check that we are not reaching end of the string
+            {
+                if (stringToWrite[i + 3] == '\\')  // Check there are the final special pattern caracter
+                {
+                    char specialPattern[2] = {stringToWrite[i+1], stringToWrite[i+2]};  // We get the special pattern
+                    if (specialPattern[0] == 'c' && specialPattern[1] == 'b')  // ClipBoard pattern 
+                    {
+                        sendClipBoard(myLayout);
+                    }
+                    i = i+3;  // We skip 3 next caracters since they are a pattern
+                    continue;  // Go into next itteration
+                }
+            }
+        }
         writeCharacter(stringToWrite[i], myLayout);
     }
     pressActionKeys(state);
@@ -261,4 +277,38 @@ void sendBackspacesInputs(int n)
         }
     }
     pressActionKeys(state);
+}
+
+// Function that presses CTRL + V on the keyboard
+void sendClipBoard(HKL keyboardLayout)
+{
+    SHORT keyCode = VkKeyScanExA('v', keyboardLayout);
+    BYTE vkCode = keyCode & 0xFF;  // 2 lower order bytes are the keycode of the letter being pressed
+
+    INPUT inputs[4];
+    ZeroMemory(inputs, sizeof(inputs));
+    
+    // We press CTRL
+    inputs[0].type = INPUT_KEYBOARD;
+    inputs[0].ki.wVk = VK_CONTROL;
+
+    // Press the "c" key
+    inputs[1].type = INPUT_KEYBOARD;
+    inputs[1].ki.wVk = vkCode;
+
+    // Now we release the keys
+    inputs[2].type = INPUT_KEYBOARD;
+    inputs[2].ki.wVk = vkCode;
+    inputs[2].ki.dwFlags = KEYEVENTF_KEYUP;
+
+    inputs[3].type = INPUT_KEYBOARD;
+    inputs[3].ki.wVk = VK_CONTROL;
+    inputs[3].ki.dwFlags = KEYEVENTF_KEYUP;
+
+    // send inputs to Windows
+    UINT uSent = SendInput(ARRAYSIZE(inputs), inputs, sizeof(INPUT));
+    if (uSent != ARRAYSIZE(inputs))
+    {
+        printf("SendInput failed: 0x%x\n", HRESULT_FROM_WIN32(GetLastError()));
+    }
 }

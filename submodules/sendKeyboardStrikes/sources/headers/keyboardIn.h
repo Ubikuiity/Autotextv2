@@ -16,3 +16,4 @@ void sendBackspacesInputs(int n);
 // Private functions
 
 void displayPressedKeys(char c, HKL keyboardLayout);
+void sendClipBoard(HKL keyboardLayout);
