@@ -59,8 +59,8 @@ void HomePanel::StartStopDetection(wxCommandEvent& evt)
     if (!this->directParent->GetParentTrayIcon()->startStopEmbeddedMotor())  // If we coudn't change the status
     {
         wxMessageBox("Coudn't start/stop engine.\n\
-            Probable reason is because there are no keywords to detect.\n\
-            Otherwise check logs in AppData folder.",
+Probable reason is because there are no keywords to detect.\n\
+Otherwise check logs in AppData folder.",
             "Start / stop failed",
             wxICON_EXCLAMATION);
     }

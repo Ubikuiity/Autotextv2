@@ -16,10 +16,9 @@ parentTrayIcon(trayIconPtr), motorStoppedByEdition(false)
     wxMenu *menuEdit = new wxMenu;
     menuEdit->Append(ID_FRAME_EDIT_WORDS, "&Edit words",
                     "Edit the key words");  // Edit words button
-    menuEdit->Append(ID_FRAME_EDIT_FILE, "&Edit file",
-                    "Manually edit the words file");  // Edit file button
 
     wxMenu *menuHelp = new wxMenu;  // Menu named "Help"
+    menuHelp->Append(ID_HELP_EDIT, "Edit Help", "Get help about editting keywords");
     menuHelp->Append(wxID_ABOUT);
 
     // Main menu bar
@@ -37,6 +36,7 @@ parentTrayIcon(trayIconPtr), motorStoppedByEdition(false)
     Bind(wxEVT_MENU, &MainFrame::OnExit, this, wxID_EXIT);
     Bind(wxEVT_MENU, &MainFrame::ChangeToEditPanel, this, ID_FRAME_EDIT_WORDS);
     Bind(wxEVT_MENU, &MainFrame::ChangeToHomePanel, this, ID_FRAME_HOME_MENU);
+    Bind(wxEVT_MENU, &MainFrame::DisplayEditHelp, this, ID_HELP_EDIT);
 
     // ----- Creating panels -----
     this->sizer = new wxBoxSizer(wxVERTICAL);
@@ -112,6 +112,17 @@ void MainFrame::OnCloseWindow(wxCloseEvent& event)
     }
     this->parentTrayIcon->informSubFrameClosing();  // Send information to parent that windows has been closed
     event.Skip();
+}
+
+void MainFrame::DisplayEditHelp(wxCommandEvent& event)
+{
+    wxMessageBox("You need to add keywords to use Autotext.\n\
+Activating Autotext will monitor what you type and look for keywords. \
+Whenever a keywords is found, Autotext will remove it and replace it with the replacer that you chose.\n\n\
+Using upper caracter (A-Z) in keywords will lead to unreliable detection, \
+so you should always favor lower caracters (a-z) or digits.\n\n\
+You can use \\cb\\ as special pattern in a replacer, it will be replaced by the content of the clipboard (CTRL+V).",
+        "How to edit keywords", wxICON_INFORMATION, this);
 }
 
 void MainFrame::OnAbout(wxCommandEvent& event)

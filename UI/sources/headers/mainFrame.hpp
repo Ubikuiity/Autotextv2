@@ -15,6 +15,7 @@ class MainFrame : public wxFrame
     void OnAbout(wxCommandEvent& event);
     void ChangeToEditPanel(wxCommandEvent& event);
     void ChangeToHomePanel(wxCommandEvent& event);
+    void DisplayEditHelp(wxCommandEvent& event);
     HomePanel* hPanel;
     EditPanel* ePanel;
     wxPanel* currentPanel;
