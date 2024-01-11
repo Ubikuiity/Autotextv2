@@ -16,9 +16,9 @@ class HomePanel : public wxPanel
     
     void StartStopDetection(wxCommandEvent& evt);
     void ChangeStartupStatus(wxCommandEvent& evt);
-    void UpdateButtonText();
     bool GetStartupStatusFromRegistry();
 
     public:
     HomePanel(MainFrame* parent);
+    void UpdateButtonText();
 };

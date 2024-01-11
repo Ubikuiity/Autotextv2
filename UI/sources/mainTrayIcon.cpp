@@ -14,9 +14,13 @@ mainTrayIcon::mainTrayIcon() : wxTaskBarIcon(), mMotorIsRunning(false)
     GetLogfileName(&filename);
     string logFolder = getAppdataAsString() + "/" + PATHS_PROGRAMNAME + "/" + PATHS_LOGFOLDER;
     string logPath = logFolder + "/" + filename;
+
+    int logsCleared = clearOldLogs(logFolder, 5);  // Removes all logs older than 5 days
+
     this->mLogger = new Logger(logPath);  // Creating Logger
     this->mLogger->log("> Started Logging <");
-    this->mLogger->log("AppData files created (code) : " + appDataCreated);
+    this->mLogger->log("AppData files created (code) : " + to_string(appDataCreated));
+    this->mLogger->log("Removed " + to_string(logsCleared) + " old log files");
 
     this->startEmbeddedMotor();
 

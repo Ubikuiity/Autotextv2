@@ -1,5 +1,6 @@
 #pragma once
 #include <wx/wx.h>
+#include <wx/splitter.h>
 #include <string>
 #include "../../headers/paths.hpp"
 

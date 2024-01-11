@@ -17,7 +17,7 @@ extern "C"
     #include "../../../submodules/sendKeyboardStrikes/sources/headers/keyboardIn.h"
     #include "../../../submodules/yamlHandler/sources/headers/all.h"
 }
-#include "../../../submodules/logger/sources/headers/logger.h"
+#include "../../../submodules/logger/sources/headers/logger.hpp"
 
 #include "../../../DLLs/headers/hook.h"
 

@@ -8,14 +8,38 @@ EditPanel::EditPanel(wxFrame* parent) : wxPanel(parent)
 {
     this->getWordsFromFile();
 
-    this->boxListOfKeyWords = new wxListBox(this, wxID_ANY, wxPoint(10, 10), wxSize(100, 150), this->keyWordsArray, wxLB_SINGLE|wxLB_HSCROLL);
-    
-    wxButton* addButton = new wxButton(this, wxID_ANY, "Add", wxPoint(10, 165), wxSize(100, 25));
-    this->removeButton = new wxButton(this, wxID_ANY, "Remove", wxPoint(10, 190), wxSize(100, 25));
-    wxButton* saveButton = new wxButton(this, wxID_ANY, "Save", wxPoint(10, 215), wxSize(100, 25));
+    wxSizer* mainSizer = new wxBoxSizer(wxHORIZONTAL);  // Main sizer
+    wxSizer* leftSizer = new wxBoxSizer(wxVERTICAL);  // Sizer containing list of keywords + buttons
+    wxSizer* keywordSizer = new wxBoxSizer(wxHORIZONTAL);  // Sizer containing keyword
+    wxSizer* rightSizer = new wxBoxSizer(wxVERTICAL);  // Sizer containing right part (keyword + replacer)
 
-    this->keyWordControl = new wxTextCtrl(this, wxID_ANY, "", wxPoint(125, 10), wxSize(200, 20));
-    this->replacerControl = new wxTextCtrl(this, wxID_ANY, "", wxPoint(125, 35), wxSize(200, 205), wxTE_MULTILINE);
+    this->boxListOfKeyWords = new wxListBox(this, wxID_ANY, wxDefaultPosition, wxSize(100, 150), this->keyWordsArray, wxLB_SINGLE|wxLB_HSCROLL);
+
+    wxButton* addButton = new wxButton(this, wxID_ANY, "Add", wxDefaultPosition, wxDefaultSize);
+    this->removeButton = new wxButton(this, wxID_ANY, "Remove", wxDefaultPosition, wxDefaultSize);
+    wxButton* saveButton = new wxButton(this, wxID_ANY, "Save", wxDefaultPosition, wxDefaultSize);
+
+    leftSizer->Add(this->boxListOfKeyWords, 1, wxEXPAND);
+    leftSizer->Add(addButton, 0, wxTOP | wxALIGN_CENTER, 2);
+    leftSizer->Add(this->removeButton, 0, wxTOP | wxALIGN_CENTER, 2);
+    leftSizer->Add(saveButton, 0, wxTOP | wxALIGN_CENTER, 2);
+
+    wxStaticText* keywordCaption = new wxStaticText(this, wxID_ANY, "Keyword : ");
+    this->keyWordControl = new wxTextCtrl(this, wxID_ANY, "", wxDefaultPosition, wxDefaultSize, 0L, wxTextValidator(wxFILTER_ALPHANUMERIC));
+    wxStaticText* replacerCaption = new wxStaticText(this, wxID_ANY, "Replacer : ");
+    this->replacerControl = new wxTextCtrl(this, wxID_ANY, "", wxDefaultPosition, wxDefaultSize, wxTE_MULTILINE);
+
+    keywordSizer->Add(keywordCaption, 0, wxEXPAND | wxTOP, 3);
+    keywordSizer->Add(this->keyWordControl, 1, wxEXPAND);
+
+    rightSizer->Add(keywordSizer, 0, wxALIGN_LEFT | wxEXPAND | wxDOWN, 5);
+    rightSizer->Add(replacerCaption, 0, wxTOP, 5);
+    rightSizer->Add(this->replacerControl, 1, wxALIGN_LEFT | wxEXPAND);
+
+    mainSizer->Add(leftSizer, 0, wxEXPAND | wxLEFT | wxTOP | wxDOWN, 5);
+    mainSizer->Add(rightSizer, 1, wxEXPAND | wxALL, 5);
+
+    this->SetSizerAndFit(mainSizer);
 
     addButton->Bind(wxEVT_BUTTON, &EditPanel::addKeyWord, this);
     this->removeButton->Bind(wxEVT_BUTTON, &EditPanel::removeKeyWord, this);
@@ -29,7 +53,7 @@ EditPanel::EditPanel(wxFrame* parent) : wxPanel(parent)
 void EditPanel::addKeyWord(wxCommandEvent& event)
 {
     this->keyWordsArray.Add("new");
-    this->replacersArray.Add("");
+    this->replacersArray.Add("Put replacer here...");
 
     this->boxListOfKeyWords->Append("new");
     this->boxListOfKeyWords->SetSelection(this->keyWordsArray.GetCount()-1);  // Set selection on last item ("New")

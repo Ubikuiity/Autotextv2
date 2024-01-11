@@ -1,9 +1,11 @@
-#ifndef INC_LOGGER
-#define INC_LOGGER
+#pragma once
 
 #include <fstream>
 #include <string>
+#include <filesystem>
+#include <chrono>
 #include <ctime>
+#include <iostream>
 
 // Basic custom class used for logging
 class Logger
@@ -26,5 +28,4 @@ class Logger
 };
 
 void GetLogfileName(std::string*);
-
-#endif
+int clearOldLogs(const std::string logFolder, int nbDays);

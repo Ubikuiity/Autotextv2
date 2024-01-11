@@ -64,10 +64,17 @@ void MainFrame::ChangeToHomePanel(wxCommandEvent& event)
 
     if (this->motorStoppedByEdition)
     {
-        this->parentTrayIcon->startEmbeddedMotor();
-        SetStatusText("Detection has been reactivated");
+        if (this->parentTrayIcon->startEmbeddedMotor())
+        {
+            SetStatusText("Detection has been reactivated");
+        }
+        else
+        {
+            SetStatusText("Coudn't start detection (no keywords ?)");
+        }
         this->motorStoppedByEdition = false;
     }
+    this->hPanel->UpdateButtonText();
 }
 
 void MainFrame::ChangeToEditPanel(wxCommandEvent& event)
